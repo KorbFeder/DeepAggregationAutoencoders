@@ -23,7 +23,7 @@ class FuzzyHedgeLayer(nn.Module):
 		super().__init__()
 		self.fuzzy_operator = fuzzy_operator
 		self.exponent = nn.Parameter(torch.Tensor(out_features, in_features), requires_grad=True)
-		nn.init.uniform_(self.exponent, a=0, b=100)
+		nn.init.uniform_(self.exponent)
 
 	def forward(self: "FuzzyHedgeLayer", x: torch.Tensor) -> torch.Tensor:
 		return power(x, self.exponent, self.fuzzy_operator)
