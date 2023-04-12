@@ -7,10 +7,12 @@ from torch.utils.data import DataLoader
 
 from models.AutoEncoder import AutoEncoder
 from models.DeepAggregateAutoEncoder import DeepAggregateAutoEncoder
+from models.MinMaxAutoEncoder import MinMaxAutoEncoder
 from utils.plotting import plot_outputs, progress_bar
 from utils.data_loading import load_mnist_data
 from fuzzy_logic.Fuzzyfication import Fuzzyification
 from fuzzy_logic.Membership import Membership
+
 
 class Evaluation:
 	def __init__(
@@ -77,8 +79,10 @@ class Evaluation:
 if __name__ == "__main__":
 	fae = DeepAggregateAutoEncoder(784, [128, 64, 128], [torch.min, torch.max, torch.max, torch.min], activation=nn.ReLU)
 	ae = AutoEncoder(784, [128, 64, 128])
+	mae = MinMaxAutoEncoder(784, [128, 64, 128], [torch.min, torch.max, torch.max, torch.min], activation=nn.ReLU)
 	#evaluation = Evaluation(ae, 1)
-	evaluation = Evaluation(fae, 1)
+	#evaluation = Evaluation(fae, 1)
+	evaluation = Evaluation(mae, 1)
 	evaluation.train()
 	evaluation.test()
 
