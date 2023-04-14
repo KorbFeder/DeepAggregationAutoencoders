@@ -9,7 +9,7 @@ from models.AutoEncoder import AutoEncoder
 from models.DeepAggregateAutoEncoder import DeepAggregateAutoEncoder
 from models.MinMaxAutoEncoder import MinMaxAutoEncoder
 from utils.plotting import plot_outputs, progress_bar
-from utils.data_loading import load_mnist_data
+from utils.data_loading import get_mnist_dataloaders
 from fuzzy_logic.Fuzzyfication import Fuzzyification
 from fuzzy_logic.Membership import Membership
 
@@ -19,7 +19,7 @@ class Evaluation:
 		self: "Evaluation", 
 		model: nn.Module, 
 		epochs: int, 
-		load_data: Callable[[], Tuple[DataLoader, DataLoader]] = load_mnist_data, 
+		load_data: Callable[[], Tuple[DataLoader, DataLoader]] = get_mnist_dataloaders, 
 		error = nn.MSELoss()
 	) -> None:
 		self.model = model
