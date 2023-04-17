@@ -18,7 +18,7 @@ class Evaluation:
 	def __init__(
 		self: "Evaluation", 
 		model: nn.Module, 
-		epochs: int, 
+		epochs: int = 1, 
 		load_data: Callable[[], Tuple[DataLoader, DataLoader]] = get_mnist_dataloaders, 
 		error = nn.MSELoss()
 	) -> None:
@@ -30,7 +30,9 @@ class Evaluation:
 	def train(self: "Evaluation") -> None:
 		optim = Adam(self.model.parameters(), lr=1e-3)
 		losses = []
-
+		originals = []
+		outputs = []
+	
 		for epoch in range(self.epochs):
 			loss = []
 			for i, (batch_features, _) in enumerate(self.train_loader):
@@ -39,20 +41,26 @@ class Evaluation:
 
 				optim.zero_grad()
 
-				outputs = self.model(batch_features)
+				output = self.model(batch_features)
 
-				train_loss = self.error(outputs, batch_features)
+				train_loss = self.error(output, batch_features)
 
 				train_loss.backward()
 				optim.step()
+
+				# save data for plotting
 				with torch.no_grad():
 					loss.append(train_loss.item())
-				
-				progress_bar(i, len(self.train_loader))
-			losses += loss
+					originals += batch_features.reshape(-1, 28, 28)
+					outputs += output.reshape(-1, 28, 28)
+					progress_bar(i, len(self.train_loader))
 
-			loss = sum(losses) / len(self.train_loader)
-			print(f"epoch: {epoch+1}/{self.epochs}, train-loss = {loss}")
+			# plot results
+			with torch.no_grad():
+				losses += loss
+				loss = sum(loss) / len(self.train_loader)
+				print(f"epoch: {epoch+1}/{self.epochs}, train-loss = {loss}")
+				plot_outputs(originals, outputs, name=f"progress-{epoch+1}I{self.epochs}")
 
 
 	def test(self: "Evaluation") -> None:

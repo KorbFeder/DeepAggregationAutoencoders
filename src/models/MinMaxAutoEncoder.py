@@ -22,7 +22,7 @@ class MinMaxLayer(nn.Module):
 		nn.init.uniform_(self.bias, -bound, bound)
 
 	def forward(self: "MinMaxLayer", x: torch.Tensor) -> torch.Tensor:
-		return self.fuzzy_operator(torch.mm(x, self.weights.t()), self.bias)
+		return self.fuzzy_operator(self.weights[:, None] * x, dim=2).values.T
 
 class MinMaxAutoEncoder(nn.Module):
 	def __init__(self: "MinMaxAutoEncoder",
