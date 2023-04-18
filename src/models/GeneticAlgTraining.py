@@ -13,8 +13,6 @@ from typing import Callable, List, Tuple, TypedDict
 class GaConfig(TypedDict):
 	num_generations: int
 	num_parents_mating: int
-	sol_per_pop: int
-	num_genes: int
 	parent_selection_type: str
 	keep_parents: int
 	crossover_type: str
@@ -22,7 +20,7 @@ class GaConfig(TypedDict):
 	mutation_percent_genes: str
 
 # default config if there is not config specified
-defaultConfig = {
+defaultConfig: GaConfig = {
 	'num_generations': 20,
 	'num_parents_mating': 4,
 	'parent_selection_type': 'sss',
