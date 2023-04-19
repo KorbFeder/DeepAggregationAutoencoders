@@ -5,7 +5,7 @@ import pygad
 import pygad.torchga as ga
 from torch.utils.data import DataLoader
 
-from utils.data_loading import get_mnist_dataloaders
+from utils.data_loading import get_mnist_dataset
 from utils.plotting import progress_bar
 
 from typing import Callable, List, Tuple, TypedDict
@@ -23,7 +23,7 @@ class GaConfig(TypedDict):
 defaultConfig: GaConfig = {
 	'num_generations': 20,
 	'num_parents_mating': 4,
-	'parent_selection_type': 'sss',
+	'parent_selection_type': 'tournament',
 	'keep_parents': 1,
 	'crossover_type': 'single_point',
 	'mutation_type': 'random',
@@ -35,7 +35,7 @@ class GeneticAlgTraining:
 		self: "GeneticAlgTraining", 
 		model: nn.Module,
 		config: GaConfig = defaultConfig,
-		load_data: Callable[[], Tuple[DataLoader, DataLoader]] = get_mnist_dataloaders, 
+		load_data: Callable[[], Tuple[torch.Tensor, torch.Tensor]] = get_mnist_dataset, 
 	) -> None:
 
 		self.loss_func = nn.MSELoss()
@@ -47,11 +47,8 @@ class GeneticAlgTraining:
 		#self.model = BinaryAutoEncoder(in_features, hidden_sizes, fuzzy_operators_per_layer)
 
 		# load data
-		self.train_loader, self.test_loader = load_data()
-		self.train_loader = iter(self.train_loader)
-		self.test_loader = iter(self.test_loader)
-		self.current_loader = self.train_loader
-		self.data_inputs = next(self.current_loader)[0].view(-1, 784)
+		train_data, _ = load_data()
+		self.data_inputs = train_data.view(-1, 784)
 
 	def fitness(self: "GeneticAlgTraining", ga_instance: pygad.GA, solution: List[float], solution_idx: int):
 		# load weights into model
@@ -68,12 +65,6 @@ class GeneticAlgTraining:
 	def new_gen_callback(self: "GeneticAlgTraining", ga_instance: pygad.GA):
 		self.curr_iteration += 1
 		progress_bar(self.curr_iteration, self.config['num_generations'])
-		best_solution, best_solution_fitness, best_match_idx = ga_instance.best_solution(pop_fitness=ga_instance.last_generation_fitness)
-		try: 
-			self.data_inputs = next(self.current_loader)[0].view(-1, 784)
-		except StopIteration:
-			self.current_loader = self.test_loader
-			self.data_inputs = next(self.current_loader)[0].view(-1, 784)
 
 	def train(self: "GeneticAlgTraining"):
 		# no need for pytorch gradient evaluation
@@ -85,8 +76,8 @@ class GeneticAlgTraining:
 				num_generations=self.config['num_generations'],
 				num_parents_mating=self.config['num_parents_mating'],
 				fitness_func=self.fitness,
-				init_range_low=0,
-				init_range_high=1,
+				#init_range_low=0,
+				#init_range_high=1,
 				parent_selection_type=self.config['parent_selection_type'],
 				keep_parents=self.config['keep_parents'],
 				crossover_type=self.config['crossover_type'],

@@ -4,6 +4,8 @@ import pygad
 import numpy
 
 from models.AutoEncoder import AutoEncoder
+from models.BinaryAutoEncoder import BinaryAutoEncoder
+from utils.data_loading import get_mnist_dataloaders
 
 def fitness_func(ga_instance, solution, sol_idx):
 	global data_inputs, data_outputs, torch_ga, model, loss_function
@@ -20,28 +22,34 @@ def callback_generation(ga_instance):
 	print("Generation = {generation}".format(generation=ga_instance.generations_completed))
 	print("Fitness    = {fitness}".format(fitness=ga_instance.best_solution()[1]))
 
-model = AutoEncoder(8, [6, 4, 2, 4, 6])
+model = BinaryAutoEncoder(8, [4], [torch.max, torch.max, torch.max, torch.max])
 
 torch_ga = torchga.TorchGA(model=model,
 						num_solutions=10)
 
 loss_function = torch.nn.MSELoss()
 
-data_inputs = torch.tensor([0.0, 0.0,
-                            0.0, 1.0,
-                            1.0, 0.0,
-                            1.0, 1.0])
+train_loader, test_loader = get_mnist_dataloaders()
+train_loader = iter(train_loader)
+#data_inputs = next(train_loader)[0].view(-1, 784)
+data_inputs = torch.Tensor([1, 0, 1, 0, 1, 0, 1, 0])
+
+
 
 def test():
 	num_generations = 200 # Number of generations.
 	num_parents_mating = 5 # Number of solutions to be selected as parents in the mating pool.
 	initial_population = torch_ga.population_weights # Initial population of network weights.
 
-	ga_instance = pygad.GA(num_generations=num_generations,
-						num_parents_mating=num_parents_mating,
-						initial_population=initial_population,
-						fitness_func=fitness_func,
-						on_generation=callback_generation)
+	ga_instance = pygad.GA(
+		num_generations=num_generations,
+		num_parents_mating=num_parents_mating,
+		initial_population=initial_population,
+		gene_type=int,
+		gene_space=[0,1],
+		fitness_func=fitness_func,
+		on_generation=callback_generation
+	)
 
 	ga_instance.run()
 
@@ -56,6 +64,6 @@ def test():
 	model.load_state_dict(best_solution_weights)
 	predictions = model(data_inputs)
 
-	print(f"prediction of {data_inputs} is {predictions}")
+	print(f"prediction of {data_inputs} is {predictions}, weights: {best_solution_weights}")
 
 
