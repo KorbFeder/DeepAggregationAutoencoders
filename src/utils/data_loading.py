@@ -25,5 +25,7 @@ def get_mnist_dataset() -> Tuple[torch.Tensor, torch.Tensor]:
 	test_dataset = torch.nn.functional.normalize(test_dataset)
 	return train_dataset, test_dataset
 
-
+def simple_test_dataset() -> Tuple[torch.Tensor, torch.Tensor]:
+	train = torch.Tensor([1, 0, 1, 0, 1, 0, 1, 0])
+	return train, train
 

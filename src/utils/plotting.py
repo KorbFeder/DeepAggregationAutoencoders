@@ -2,7 +2,9 @@ import torch
 import matplotlib.pyplot as plt
 from typing import List
 
-def plot_outputs(originals: List[torch.Tensor], outputs: List[torch.Tensor], rows: int = 8, name: str = "mnist-output", show_plot: bool = False):		
+def plot_mnist_outputs(originals: List[torch.Tensor], outputs: List[torch.Tensor], rows: int = 8, name: str = "mnist-output", show_plot: bool = False):		
+	originals = list(map(lambda x: x.reshape(28, 28), originals))
+	outputs = list(map(lambda x: x.reshape(28, 28), outputs))
 	f, axarr = plt.subplots(4, rows, figsize=(12, 6))
 	f.tight_layout()
 	axarr[0, 0].set_title("original", fontsize=15)
