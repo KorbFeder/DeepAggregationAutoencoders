@@ -14,7 +14,7 @@ def plot_outputs(originals: List[torch.Tensor], outputs: List[torch.Tensor], row
 		axarr[3, i].imshow(outputs[i + rows])
 	if show_plot:
 		plt.show()
-	f.savefig(name)
+	f.savefig(f"./images/{name}")
 
 
 def progress_bar(current, total, bar_length=20):
