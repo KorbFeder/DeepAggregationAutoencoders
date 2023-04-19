@@ -1,4 +1,4 @@
 .vscode/
-MNIST/
+data/MNIST/
 *.png
 __pycache__/
