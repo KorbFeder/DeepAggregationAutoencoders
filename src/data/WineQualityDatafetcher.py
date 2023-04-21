@@ -1,8 +1,7 @@
 import torch
-import torchvision
 import pandas as pd
 import numpy as np
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader
 
 from data.Datafetcher import Datafetcher
 
@@ -13,9 +12,8 @@ class _WineQualityDataset(Dataset):
 		self.data = pd.read_csv(file_path, sep=';')
 		self.transform = transform
 
-		train_size = int(0.8 * len(self.data))
-		test_size = len(self.data) - train_size
-		train_dataset, test_dataset = random_split(self.data, [train_size, test_size])
+		train_dataset = self.data.sample(frac=0.8,random_state=200)
+		test_dataset = self.data.drop(train_dataset.index)
 
 		if train:
 			self.data = train_dataset
@@ -26,11 +24,11 @@ class _WineQualityDataset(Dataset):
 	def __len__(self: "_WineQualityDataset") -> int:
 		return len(self.data)
 
-	def __getitem__(self: "_WineQualityDataset", index: List[int]) -> np.ndarray[float]:
+	def __getitem__(self: "_WineQualityDataset", index: List[int]) -> np.ndarray:
 		if torch.is_tensor(index):
 			index = index.tolist()
 
-		sample = np.array(self.data.iloc[index])
+		sample = torch.Tensor(self.data.iloc[index])
 		if self.transform:
 			sample = self.transform(sample)
 
@@ -38,13 +36,8 @@ class _WineQualityDataset(Dataset):
 
 class WineQualityDatafetcher(Datafetcher):
 	def __init__(self: "WineQualityDatafetcher", file_path: str, transform = None) -> None:
-		if transform:
-			transformations = torchvision.transforms.Compose([torchvision.transforms.ToTensor(), transform])
-		else:
-			transformations = torchvision.transforms.ToTensor()
-
-		self.train_data = _WineQualityDataset(file_path=file_path, train=True, transform=transformations)
-		self.test_data = _WineQualityDataset(file_path=file_path, train=False, transform=transformations)
+		self.train_data = _WineQualityDataset(file_path=file_path, train=True, transform=transform)
+		self.test_data = _WineQualityDataset(file_path=file_path, train=False, transform=transform)
 	
 	def get_train_dataset(self: "WineQualityDatafetcher") -> _WineQualityDataset:
 		return self.train_data
@@ -58,4 +51,6 @@ class WineQualityDatafetcher(Datafetcher):
 	def get_test_dataloader(self: "WineQualityDatafetcher", batch_size: int = 32) -> DataLoader:
 		return DataLoader(self.test_data, batch_size=batch_size, shuffle=False)
 
+	def num_features(self: "WineQualityDatafetcher") -> int:
+		return self.train_data.data.shape[1]
 

@@ -5,8 +5,8 @@ import pygad
 import pygad.torchga as ga
 from torch.utils.data import DataLoader
 
-from utils.data_loading import get_mnist_dataset
 from utils.plotting import progress_bar
+from data.Datafetcher import Datafetcher
 
 from typing import Callable, List, Tuple, TypedDict
 
@@ -34,8 +34,8 @@ class GeneticAlgTraining:
 	def __init__(
 		self: "GeneticAlgTraining", 
 		model: nn.Module,
+		data_fetcher: Datafetcher, 
 		config: GaConfig = defaultConfig,
-		load_data: Callable[[], Tuple[torch.Tensor, torch.Tensor]] = get_mnist_dataset, 
 	) -> None:
 
 		self.loss_func = nn.MSELoss()
@@ -44,11 +44,10 @@ class GeneticAlgTraining:
 
 		# initalize model
 		self.model = model
-		#self.model = BinaryAutoEncoder(in_features, hidden_sizes, fuzzy_operators_per_layer)
 
 		# load data
-		train_data, _ = load_data()
-		self.data_inputs = train_data.view(-1, 784)
+		train_data = data_fetcher.get_train_dataset()
+		self.data_inputs = train_data
 
 	def fitness(self: "GeneticAlgTraining", ga_instance: pygad.GA, solution: List[float], solution_idx: int):
 		# load weights into model

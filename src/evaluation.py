@@ -8,8 +8,8 @@ from torch.utils.data import DataLoader
 from models.AutoEncoder import AutoEncoder
 from models.DeepAggregateAutoEncoder import DeepAggregateAutoEncoder
 from models.MinMaxAutoEncoder import MinMaxAutoEncoder
+from data.Datafetcher import Datafetcher
 from utils.plotting import plot_mnist_outputs, progress_bar
-from utils.data_loading import get_mnist_dataloaders
 from fuzzy_logic.Fuzzyfication import Fuzzyification
 from fuzzy_logic.Membership import Membership
 
@@ -18,16 +18,17 @@ class Evaluation:
 	def __init__(
 		self: "Evaluation", 
 		model: nn.Module, 
+		data_fetcher: Datafetcher, 
 		epochs: int = 1, 
-		load_data: Callable[[], Tuple[DataLoader, DataLoader]] = get_mnist_dataloaders, 
-		plot_outputs: Callable[[torch.Tensor, torch.Tensor], None] = plot_mnist_outputs,
+		plot_outputs: Callable[[torch.Tensor, torch.Tensor], None] = None,
 		error = nn.MSELoss()
 	) -> None:
 		self.model = model
 		self.epochs = epochs
 		self.error = error
 		self.plot_outputs = plot_outputs
-		self.train_loader, self.test_loader = load_data()
+		self.train_loader: DataLoader = data_fetcher.get_train_dataloader()
+		self.test_loader: DataLoader = data_fetcher.get_test_dataloader()
 
 	def train(self: "Evaluation") -> None:
 		optim = Adam(self.model.parameters(), lr=1e-3)
@@ -38,7 +39,7 @@ class Evaluation:
 	
 		for epoch in range(self.epochs):
 			loss = []
-			for i, (batch_features, _) in enumerate(self.train_loader):
+			for i, batch_features in enumerate(self.train_loader):
 
 				batch_features = flatten(batch_features)
 
@@ -63,16 +64,14 @@ class Evaluation:
 				losses += loss
 				loss = sum(loss) / len(self.train_loader)
 				print(f"epoch: {epoch+1}/{self.epochs}, train-loss = {loss}")
-				self.plot_outputs(originals, outputs, name=f"progress-{epoch+1}I{self.epochs}")
-
 
 	def test(self: "Evaluation") -> None:
 		originals = []
 		outputs = []
 		loss = []
-		for i, (batch_features, _) in enumerate(self.test_loader):
+		for i, batch_features in enumerate(self.test_loader):
 
-			batch_features = batch_features.view(-1, 784)
+			batch_features = batch_features
 
 			with torch.no_grad():
 				output = self.model(batch_features)
@@ -85,18 +84,8 @@ class Evaluation:
 
 		avg_loss = sum(loss) / len(self.test_loader)
 		print(f"test-avg-loss = {avg_loss}")
-		self.plot_outputs(originals, outputs)
-
-if __name__ == "__main__":
-	fae = DeepAggregateAutoEncoder(784, [128, 64, 128], [torch.min, torch.max, torch.max, torch.min], activation=nn.ReLU)
-	ae = AutoEncoder(784, [128, 64, 128])
-	mae = MinMaxAutoEncoder(784, [128, 64, 128], [torch.min, torch.max, torch.max, torch.min], activation=nn.ReLU)
-	#evaluation = Evaluation(ae, 1)
-	#evaluation = Evaluation(fae, 1)
-	evaluation = Evaluation(mae, 1)
-	evaluation.train()
-	evaluation.test()
-
+		if self.plot_outputs:
+			self.plot_outputs(originals, outputs)
 
 
 

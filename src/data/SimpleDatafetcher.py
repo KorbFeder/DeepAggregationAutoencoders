@@ -13,7 +13,7 @@ class _SimpleDataset(Dataset):
 	def __len__(self: "_SimpleDataset") -> int:
 		return 1
 
-	def __getitem__(self, index) -> np.ndarray[float]:
+	def __getitem__(self, index) -> np.ndarray:
 		data = self.data
 		if self.transform:
 			data = self.transform(data)	
