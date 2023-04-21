@@ -1,17 +1,41 @@
 import torchvision
+import torch
+import numpy as np
 from torch.utils.data import DataLoader, Dataset
+
+from typing import List
 
 from data.Datafetcher import Datafetcher
 
+class MnistDataset(Dataset):
+	def __init__(self: "MnistDataset", file_save_path: str = "./datasets/", train: bool = True, transform=None) -> None:
+		self.transform = transform
+
+		train_dataset = torchvision.datasets.MNIST(root=file_save_path, train=True, download=True)
+		test_dataset = torchvision.datasets.MNIST(root=file_save_path, train=False, download=True)
+
+		if train:
+			self.data = train_dataset.data
+		else:
+			self.data = test_dataset.data
+
+	def __len__(self: "MnistDataset"):
+		return len(self.data)
+
+	def __getitem__(self: "MnistDataset", index: List[int]) -> np.ndarray:
+		if torch.is_tensor(index):
+			index = index.tolist()
+
+		sample = torch.Tensor(self.data[index]).float()
+		if self.transform:
+			sample = self.transform(sample)
+
+		return sample		
+
 class MnistDatafetcher(Datafetcher):
 	def __init__(self: "MnistDatafetcher", file_save_path: str = "./datasets/", transform=None) -> None:
-		if transform:
-			transformations = torchvision.transforms.Compose([torchvision.transforms.ToTensor(), transform])
-		else:
-			transformations = torchvision.transforms.ToTensor()
-
-		self.train_dataset = torchvision.datasets.MNIST(root=file_save_path, train=True, transform=transformations, download=True)
-		self.test_dataset = torchvision.datasets.MNIST(root=file_save_path, train=False, transform=transformations, download=True)
+		self.train_dataset = MnistDataset(file_save_path, train=True, transform=transform)
+		self.test_dataset = MnistDataset(file_save_path, train=False, transform=transform)
 
 	def get_train_dataset(self: "MnistDatafetcher") -> Dataset:
 		return self.train_dataset
@@ -24,3 +48,6 @@ class MnistDatafetcher(Datafetcher):
 
 	def get_test_dataloader(self: "MnistDatafetcher", batch_size: int = 32) -> DataLoader:
 		return DataLoader(self.test_dataset, batch_size=batch_size, shuffle=False)
+
+	def num_features(self: "MnistDatafetcher") -> int:
+		return self.train_dataset.data.shape[1]

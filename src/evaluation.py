@@ -74,12 +74,13 @@ class Evaluation:
 
 
 	def test(self: "Evaluation") -> None:
+		flatten = nn.Flatten()
 		originals = []
 		outputs = []
 		loss = []
 		for i, batch_features in enumerate(self.test_loader):
 
-			batch_features = batch_features
+			batch_features = flatten(batch_features)
 
 			with torch.no_grad():
 				output = self.model(batch_features)
