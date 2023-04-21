@@ -15,9 +15,9 @@ class MnistDataset(Dataset):
 		test_dataset = torchvision.datasets.MNIST(root=file_save_path, train=False, download=True)
 
 		if train:
-			self.data = train_dataset.data
+			self.data = train_dataset.data.div(255)
 		else:
-			self.data = test_dataset.data
+			self.data = test_dataset.data.div(255)
 
 	def __len__(self: "MnistDataset"):
 		return len(self.data)
@@ -44,7 +44,7 @@ class MnistDatafetcher(Datafetcher):
 		return self.test_dataset
 
 	def get_train_dataloader(self: "MnistDatafetcher", batch_size: int = 32) -> DataLoader:
-		return DataLoader(self.train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
+		return DataLoader(self.train_dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
 
 	def get_test_dataloader(self: "MnistDatafetcher", batch_size: int = 32) -> DataLoader:
 		return DataLoader(self.test_dataset, batch_size=batch_size, shuffle=False)

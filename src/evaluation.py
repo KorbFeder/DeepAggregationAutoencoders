@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from torch.optim import Adam
 
-from typing import Callable, Tuple
+from typing import Callable, Optional
 from torch.utils.data import DataLoader
 
 from models.AutoEncoder import AutoEncoder
@@ -22,7 +22,8 @@ class Evaluation:
 		epochs: int = 1, 
 		plot_outputs: Callable[[torch.Tensor, torch.Tensor], None] = None,
 		error = nn.MSELoss(),
-		run_name = 'default'
+		run_name = 'default',
+		seed: Optional[int] = None
 	) -> None:
 		self.model = model
 		self.epochs = epochs
@@ -31,6 +32,9 @@ class Evaluation:
 		self.run_name = run_name
 		self.train_loader: DataLoader = data_fetcher.get_train_dataloader()
 		self.test_loader: DataLoader = data_fetcher.get_test_dataloader()
+
+		if seed != None:
+			self.set_seeds(seed)
 
 	def train(self: "Evaluation") -> None:
 		optim = Adam(self.model.parameters(), lr=1e-3)
@@ -96,6 +100,7 @@ class Evaluation:
 		if self.plot_outputs:
 			self.plot_outputs(originals, outputs)
 
-
+	def set_seeds(self: "Evaluation", seed: int):
+		torch.manual_seed(seed)
 
 	
