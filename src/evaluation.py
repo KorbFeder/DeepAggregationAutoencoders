@@ -10,8 +10,6 @@ from models.DeepAggregateAutoEncoder import DeepAggregateAutoEncoder
 from models.MinMaxAutoEncoder import MinMaxAutoEncoder
 from data.Datafetcher import Datafetcher
 from utils.plotting import progress_bar, plot_training_loss
-from fuzzy_logic.Fuzzyfication import Fuzzyification
-from fuzzy_logic.Membership import Membership
 
 
 class Evaluation:

@@ -11,9 +11,10 @@ from Evaluation import Evaluation
 from data.WineQualityDatafetcher import WineQualityDatafetcher
 from data.MnistDatafetcher import MnistDatafetcher
 from utils.plotting import plot_mnist_outputs
+from fuzzy_logic.HighMembership import high_membership
 
 if __name__ == "__main__":
-	wineQualityDatafetcher = WineQualityDatafetcher("./datasets/WineQuality/winequality-white.csv")
+	wineQualityDatafetcher = WineQualityDatafetcher("./datasets/WineQuality/winequality-white.csv", transform=high_membership)
 	mnistDatafetcher = MnistDatafetcher()
 	#test()
 	#fae = DeepAggregateAutoEncoder(784, [128, 64, 128], [torch.min, torch.max, torch.max, torch.min], activation=nn.ReLU)

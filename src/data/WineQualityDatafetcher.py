@@ -10,7 +10,6 @@ from typing import List
 class _WineQualityDataset(Dataset):
 	def __init__(self: "_WineQualityDataset", file_path: str, train: bool = True, transform = None) -> None:
 		self.data = pd.read_csv(file_path, sep=';')
-		self.transform = transform
 
 		train_dataset = self.data.sample(frac=0.8,random_state=200)
 		test_dataset = self.data.drop(train_dataset.index)
@@ -19,6 +18,10 @@ class _WineQualityDataset(Dataset):
 			self.data = train_dataset
 		else:
 			self.data = test_dataset
+		
+		self.data = torch.Tensor(np.array(self.data))
+		if transform:
+			self.data = transform(self.data)
 
 
 	def __len__(self: "_WineQualityDataset") -> int:
@@ -28,9 +31,7 @@ class _WineQualityDataset(Dataset):
 		if torch.is_tensor(index):
 			index = index.tolist()
 
-		sample = torch.Tensor(self.data.iloc[index])
-		if self.transform:
-			sample = self.transform(sample)
+		sample = self.data[index]
 
 		return sample		
 

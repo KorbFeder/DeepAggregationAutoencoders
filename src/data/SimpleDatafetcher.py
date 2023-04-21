@@ -7,17 +7,15 @@ from data.Datafetcher import Datafetcher
 
 class _SimpleDataset(Dataset):
 	def __init__(self: "_SimpleDataset", transform=None) -> None:
-		self.data = np.array([1, 2, 3, 1, 2, 1, 4, 1])
-		self.transform = transform
+		self.data = np.array([1, 2, 3, 1, 2, 1, 4, 1], [1, 1, 1, 1, 1, 1, 1, 1])
+		if transform:
+			self.data = transform(self.data)
 	
 	def __len__(self: "_SimpleDataset") -> int:
 		return 1
 
 	def __getitem__(self, index) -> np.ndarray:
-		data = self.data
-		if self.transform:
-			data = self.transform(data)	
-		return data
+		return self.data
 
 class SimpleDatafetcher(Datafetcher):
 	def __init__(self: "SimpleDatafetcher", transform=None) -> None:

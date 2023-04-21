@@ -9,8 +9,6 @@ from data.Datafetcher import Datafetcher
 
 class MnistDataset(Dataset):
 	def __init__(self: "MnistDataset", file_save_path: str = "./datasets/", train: bool = True, transform=None) -> None:
-		self.transform = transform
-
 		train_dataset = torchvision.datasets.MNIST(root=file_save_path, train=True, download=True)
 		test_dataset = torchvision.datasets.MNIST(root=file_save_path, train=False, download=True)
 
@@ -18,6 +16,8 @@ class MnistDataset(Dataset):
 			self.data = train_dataset.data.div(255)
 		else:
 			self.data = test_dataset.data.div(255)
+		if transform:
+			self.data = transform(self.data)
 
 	def __len__(self: "MnistDataset"):
 		return len(self.data)
@@ -27,9 +27,6 @@ class MnistDataset(Dataset):
 			index = index.tolist()
 
 		sample = torch.Tensor(self.data[index]).float()
-		if self.transform:
-			sample = self.transform(sample)
-
 		return sample		
 
 class MnistDatafetcher(Datafetcher):
