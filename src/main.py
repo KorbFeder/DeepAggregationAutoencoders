@@ -9,13 +9,9 @@ from models.GeneticAlgTraining import GeneticAlgTraining
 from Evaluation import Evaluation
 
 #from utils.ga_test import test
-from utils.data_loading import simple_test_dataset
-from data.WineQualityDataloader import WineQualityDataset
+from data.WineQualityDatafetcher import WineQualityDataset
 
 if __name__ == "__main__":
-	w = WineQualityDataset()
-	a = len(w)
-	b = w.__getitem__([1,2,3])
 	#test()
 	#fae = DeepAggregateAutoEncoder(784, [128, 64, 128], [torch.min, torch.max, torch.max, torch.min], activation=nn.ReLU)
 	ae = AutoEncoder(784, [128])
