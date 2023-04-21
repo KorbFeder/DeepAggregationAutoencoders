@@ -19,7 +19,7 @@ def plot_mnist_outputs(originals: List[torch.Tensor], outputs: List[torch.Tensor
 	f.savefig(f"./images/{name}")
 
 
-def progress_bar(current, total, bar_length=20):
+def progress_bar(current, total, bar_length=20) -> None:
     fraction = current / total
 
     arrow = int(fraction * bar_length - 1) * '-' + '>'
@@ -28,3 +28,11 @@ def progress_bar(current, total, bar_length=20):
     ending = '\n' if current == total else '\r'
 
     print(f'Progress: [{arrow}{padding}] {int(fraction*100)}%', end=ending)
+
+def plot_training_loss(losses: List[float], name: str = 'default') -> None:
+	plt.plot(losses)
+	plt.title = 'Training Loss'
+	plt.xlabel = 'Epochs'
+	plt.ylabel = 'Loss'
+	plt.savefig(f'./images/training_loss_curve-{name}.png')
+	

@@ -9,7 +9,7 @@ from models.AutoEncoder import AutoEncoder
 from models.DeepAggregateAutoEncoder import DeepAggregateAutoEncoder
 from models.MinMaxAutoEncoder import MinMaxAutoEncoder
 from data.Datafetcher import Datafetcher
-from utils.plotting import plot_mnist_outputs, progress_bar
+from utils.plotting import progress_bar, plot_training_loss
 from fuzzy_logic.Fuzzyfication import Fuzzyification
 from fuzzy_logic.Membership import Membership
 
@@ -21,12 +21,14 @@ class Evaluation:
 		data_fetcher: Datafetcher, 
 		epochs: int = 1, 
 		plot_outputs: Callable[[torch.Tensor, torch.Tensor], None] = None,
-		error = nn.MSELoss()
+		error = nn.MSELoss(),
+		run_name = 'default'
 	) -> None:
 		self.model = model
 		self.epochs = epochs
 		self.error = error
 		self.plot_outputs = plot_outputs
+		self.run_name = run_name
 		self.train_loader: DataLoader = data_fetcher.get_train_dataloader()
 		self.test_loader: DataLoader = data_fetcher.get_test_dataloader()
 
@@ -59,11 +61,17 @@ class Evaluation:
 					outputs += output
 					progress_bar(i, len(self.train_loader))
 
-			# plot results
+			# results after each epoch
 			with torch.no_grad():
-				losses += loss
-				loss = sum(loss) / len(self.train_loader)
+				loss = sum(loss) / len(loss)
+				losses.append(loss)
 				print(f"epoch: {epoch+1}/{self.epochs}, train-loss = {loss}")
+			
+		# plot results after end of training
+		with torch.no_grad():
+			if self.epochs > 1:
+				plot_training_loss(losses, self.run_name)
+
 
 	def test(self: "Evaluation") -> None:
 		originals = []
@@ -82,7 +90,7 @@ class Evaluation:
 			outputs += output
 			progress_bar(i, len(self.test_loader))
 
-		avg_loss = sum(loss) / len(self.test_loader)
+		avg_loss = sum(loss) / len(loss)
 		print(f"test-avg-loss = {avg_loss}")
 		if self.plot_outputs:
 			self.plot_outputs(originals, outputs)
