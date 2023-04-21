@@ -21,7 +21,8 @@ class Evaluation:
 		plot_outputs: Callable[[torch.Tensor, torch.Tensor], None] = None,
 		error = nn.MSELoss(),
 		run_name = 'default',
-		seed: Optional[int] = None
+		seed: Optional[int] = None,
+		backtransformation: Optional[Callable[[torch.Tensor], torch.Tensor]] = None
 	) -> None:
 		self.model = model
 		self.epochs = epochs
@@ -30,6 +31,7 @@ class Evaluation:
 		self.run_name = run_name
 		self.train_loader: DataLoader = data_fetcher.get_train_dataloader()
 		self.test_loader: DataLoader = data_fetcher.get_test_dataloader()
+		self.backtranformation = backtransformation
 
 		if seed != None:
 			self.set_seeds(seed)
@@ -89,8 +91,8 @@ class Evaluation:
 
 			loss.append(self.error(output, batch_features).item())
 
-			originals += batch_features
-			outputs += output
+			originals += self.backtranformation(batch_features)
+			outputs += self.backtranformation(output)
 			progress_bar(i, len(self.test_loader))
 
 		avg_loss = sum(loss) / len(loss)

@@ -2,19 +2,20 @@ import torch
 from fuzzy_logic.Membership import Membership
 
 class MediumMembership(Membership):
-	def __init__(self: "MediumMembership", data: torch.Tensor) -> None:
-		self.data = data
+	def __init__(self: "MediumMembership") -> None:
+		pass
+		
+
+	def fuzzification(self: "MediumMembership", data: torch.Tensor) -> torch.Tensor:
 		self.col_min = data.min(dim=0).values
 		self.col_max = data.max(dim=0).values
+		return self._medium_membership(data)	
 
-	def fuzzification(self: "MediumMembership"):
-		return self._medium_membership(self.data)	
-
-	def defuzzification(self: "MediumMembership", result: torch.Tensor):
+	def defuzzification(self: "MediumMembership", result: torch.Tensor) -> torch.Tensor:
 		return self._medium_membership(result)
 
 
-	def _medium_membership(self: "MediumMembership", input_data: torch.Tensor):
+	def _medium_membership(self: "MediumMembership", input_data: torch.Tensor) -> torch.Tensor:
 		output = torch.Tensor(input_data.shape)
 		for i in range(len(input_data)):
 			for u in range(len(input_data[i])):

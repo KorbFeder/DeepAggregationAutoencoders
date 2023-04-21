@@ -10,11 +10,12 @@ from Evaluation import Evaluation
 
 from data.WineQualityDatafetcher import WineQualityDatafetcher
 from data.MnistDatafetcher import MnistDatafetcher
-from utils.plotting import plot_mnist_outputs
-from fuzzy_logic.HighMembership import high_membership
+from utils.plotting import plot_mnist_outputs, plot_wine_results
+from fuzzy_logic.HighMembership import HighMembership
 
 if __name__ == "__main__":
-	wineQualityDatafetcher = WineQualityDatafetcher("./datasets/WineQuality/winequality-white.csv", transform=high_membership)
+	membership = HighMembership()
+	wineQualityDatafetcher = WineQualityDatafetcher("./datasets/WineQuality/winequality-white.csv", transform=membership.fuzzification)
 	mnistDatafetcher = MnistDatafetcher()
 	#test()
 	#fae = DeepAggregateAutoEncoder(784, [128, 64, 128], [torch.min, torch.max, torch.max, torch.min], activation=nn.ReLU)
@@ -25,7 +26,7 @@ if __name__ == "__main__":
 	#ooga_model = ooga.train()
 	#evaluation = Evaluation(ooga_model)
 	
-	evaluation = Evaluation(ae, wineQualityDatafetcher, 10)
+	evaluation = Evaluation(ae, wineQualityDatafetcher, 100, backtransformation=membership.defuzzification, plot_outputs=plot_wine_results)
 	#evaluation = Evaluation(fae, 1)
 	##evaluation = Evaluation(mae, 80)
 	evaluation.train()

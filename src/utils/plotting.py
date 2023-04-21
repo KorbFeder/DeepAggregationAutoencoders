@@ -36,3 +36,7 @@ def plot_training_loss(losses: List[float], name: str = 'default') -> None:
 	plt.ylabel = 'Loss'
 	plt.savefig(f'./images/training_loss_curve-{name}.png')
 	
+
+def plot_wine_results(originals: List[torch.Tensor], outputs: List[torch.Tensor], rows: int = 8):
+	for i in range(rows):
+		print(f"original: {originals[i]}\noutputs: {outputs[i]}")
