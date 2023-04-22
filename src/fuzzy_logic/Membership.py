@@ -1,9 +1,11 @@
+import torch
 from abc import ABC, abstractclassmethod
 
 class Membership(ABC):
 	@abstractclassmethod
-	def fuzzification():
+	def fuzzification(self: "Membership", input_data: torch.Tensor) -> torch.Tensor:
 		pass
 
-	def defuzzification():
+	@abstractclassmethod
+	def defuzzification(self: "Membership", input_data: torch.Tensor) -> torch.Tensor:
 		pass
