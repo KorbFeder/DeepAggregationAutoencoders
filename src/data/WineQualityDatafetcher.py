@@ -46,10 +46,10 @@ class WineQualityDatafetcher(Datafetcher):
 	def get_test_dataset(self: "WineQualityDatafetcher") -> _WineQualityDataset:
 		return self.test_data
 
-	def get_train_dataloader(self: "WineQualityDatafetcher", batch_size: int = 32) -> DataLoader:
+	def get_train_dataloader(self: "WineQualityDatafetcher", batch_size: int = 1) -> DataLoader:
 		return DataLoader(self.train_data, batch_size=batch_size, shuffle=True, pin_memory=True)
 
-	def get_test_dataloader(self: "WineQualityDatafetcher", batch_size: int = 32) -> DataLoader:
+	def get_test_dataloader(self: "WineQualityDatafetcher", batch_size: int = 1) -> DataLoader:
 		return DataLoader(self.test_data, batch_size=batch_size, shuffle=False)
 
 	def num_features(self: "WineQualityDatafetcher") -> int:

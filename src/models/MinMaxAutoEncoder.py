@@ -30,7 +30,7 @@ class MinMaxAutoEncoder(nn.Module):
 		hidden_sizes: List[int], 
 		fuzzy_operators_per_layer: List[Callable[[torch.Tensor], torch.Tensor]],
 		activation: nn.Module = nn.ReLU, 
-		output_activation: nn.Module = nn.Identity
+		output_activation: nn.Module = nn.Sigmoid
 	) -> None:
 		super().__init__()
 
