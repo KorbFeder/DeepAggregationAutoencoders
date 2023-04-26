@@ -13,7 +13,8 @@ from data.MnistDatafetcher import MnistDatafetcher
 from utils.plotting import plot_mnist_outputs, plot_wine_results
 from fuzzy_logic.HighMembership import HighMembership
 
-from models.ForwardForward import test
+#from models.ForwardForward import test
+from models.ForwardForwardLayer import test
 
 if __name__ == "__main__":
 	test()
