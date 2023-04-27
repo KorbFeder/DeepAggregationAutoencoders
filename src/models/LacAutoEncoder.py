@@ -1,14 +1,18 @@
 import torch
 import torch.nn as nn
-import torch.functional as F
-from torch.optim import Adam, SGD
+from torch.optim import Adam
 from torchvision.datasets import MNIST
 from torchvision.transforms import Compose, ToTensor, Normalize, Lambda
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from typing import List, Tuple
+from typing import List, Tuple, TypedDict, Optional
+
+class LayerComponents(TypedDict):
+	layer_type: nn.Module
+	activation: nn.Module
+	normalization: Optional[nn.Module]
 
 def plot_training_loss(losses: List[float], name: str = 'default') -> None:
 	plt.plot(losses)
@@ -17,7 +21,7 @@ def plot_training_loss(losses: List[float], name: str = 'default') -> None:
 	plt.ylabel = 'Loss'
 	plt.savefig(f'./images/training_loss_curve-{name}.png')
 
-def MNIST_loaders(train_batch_size=1, test_batch_size=1):
+def MNIST_loaders(train_batch_size=32, test_batch_size=32):
     transform = Compose([
         ToTensor(),
         Normalize((0.1307,), (0.3081,)),
@@ -54,34 +58,42 @@ class LacAutoEncoder(nn.Module):
 	) -> None:
 		super().__init__()
 
-		layer_sizes = [in_features, *hidden_sizes, in_features]
-		self.out_activation = out_activation
-		self.activation = activation
-		self.layers: List[nn.Linear] = []
+		layer_sizes = [in_features, *hidden_sizes]
+		self.layers: List[LayerComponents] = []
 		self.num_hidden_neurons = sum(hidden_sizes)
 
 		for i in range(len(layer_sizes)-1):
-			self.layers += [nn.Linear(layer_sizes[i], layer_sizes[i + 1])]
+			self.layers += [{
+				'layer_type': nn.Linear(layer_sizes[i], layer_sizes[i + 1]),
+				'activation': activation,
+				'normalization': nn.BatchNorm1d(layer_sizes[i + 1])
+			}]
 
-		self.hidden_optim = Adam(sum([list(layer.parameters()) for layer in self.layers[:-1]], []))
-		self.output_optim = Adam(self.layers[-1].parameters())
+		self.out_layer: LayerComponents = {'layer_type': nn.Linear(layer_sizes[-1], in_features), 'activation': out_activation, 'normalization': None}
+
+		h_params = sum([list(layer['layer_type'].parameters()) + list(layer['normalization'].parameters()) for layer in self.layers[:-1]], [])
+		o_params = self.out_layer['layer_type'].parameters()
+
+		self.hidden_optim = Adam(h_params)
+		self.output_optim = Adam(o_params)
 
 	def forward(self: "LacAutoEncoder", x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-		hidden_activations = torch.Tensor(self.num_hidden_neurons)
+		hidden_activations = torch.Tensor(x.shape[0], self.num_hidden_neurons)
 		i = 0
 
 		# forward pass through the network, but save the activation of every neuron
 		A = x
-		for layer in self.layers[:-1]: 
-			WA = layer(A.detach())
-			S = WA / WA.norm(2, 1, keepdim=True) + 1e-4
-			A = self.activation(S)
+		for layer in self.layers: 
+			WA = (layer['layer_type'](A.detach()))
+			S = layer['normalization'](WA)
+			A = layer['activation'](S)
+
 			new_i = S.shape[1] + i
-			hidden_activations[i:new_i] = S
+			hidden_activations[:,i:new_i] = S
 			i = new_i
 
 		# the last layers output
-		output = self.activation(self.layers[-1](A.detach()))
+		output = self.out_layer['activation'](self.out_layer['layer_type'](A.detach()))
 
 		return hidden_activations, output
 
@@ -119,8 +131,9 @@ with torch.no_grad():
 	plot_training_loss(output_losses, "output loss")
 
 	x = next(iter(test_loader))[0]
-	x_new = lae(x)
+	_, x_new = lae(x)
 
 	visualize_sample(x)
 	visualize_sample(x_new)
+	print("done")
 
