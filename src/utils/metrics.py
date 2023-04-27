@@ -1,8 +1,11 @@
 import pandas as pd
 import json
+import os
 from time import time
 
 from typing import TypedDict, List
+
+from logger.plot_loss import plot_loss
 
 MetricType = TypedDict(
 	'MetricType',
@@ -17,15 +20,11 @@ MetricType = TypedDict(
 
 class Metrics:
 	def __init__(self: "Metrics") -> None:
-		self.metrics: List[MetricType] = []
-		self.last_time = time()
-		self.total_num_of_samples = 0
-		self.curr_iteration = 0
+		self.reset()
 
 	def add(self: "Metrics", epoch: int, processed_samples: int, loss: List[float]):
 		curr_time = time()
-		elapsed_time = curr_time - self.last_time
-		self.last_time = curr_time
+		elapsed_time = curr_time - self.first_time
 		self.total_num_of_samples += processed_samples
 		self.curr_iteration += 1
 
@@ -37,9 +36,20 @@ class Metrics:
 			'iterations': self.curr_iteration
 		})
 
-	def print(self: "Metrics") -> None:
+	def reset(self: "Metrics"):
+		self.metrics: List[MetricType] = []
+		self.first_time = time()
+		self.total_num_of_samples = 0
+		self.curr_iteration = 0
+
+	def print_last(self: "Metrics") -> None:
 		print(json.dumps(self.metrics[-1], indent=2, sort_keys=True))
 
-	def save(self: "Metrics", save_path: str) -> None:
+	def plot_loss(self: "Metrics", name: str = 'metric-loss') -> None:
+		losses = list(map(list, zip(*[metric['loss'] for metric in self.metrics])))
+		for loss in losses:
+			plot_loss(loss, name)
+
+	def save(self: "Metrics", save_path: str, name: str = 'results.csv') -> None:
 		df = pd.DataFrame(self.metrics)
-		df.to_csv(save_path, index=False)
+		df.to_csv(os.path.join(save_path, name), index=False)

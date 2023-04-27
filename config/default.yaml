@@ -1,0 +1,4 @@
+trainer:
+  epochs: 20
+
+csv_save_path: './log'

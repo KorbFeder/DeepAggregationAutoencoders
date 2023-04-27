@@ -5,10 +5,10 @@ from torch.utils.data import DataLoader, Dataset
 
 from typing import List
 
-from data.Datafetcher import Datafetcher
+from data_loader.Datafetcher import Datafetcher
 
 class MnistDataset(Dataset):
-	def __init__(self: "MnistDataset", file_save_path: str = "./datasets/", train: bool = True, transform=None) -> None:
+	def __init__(self: "MnistDataset", file_save_path: str = "./data/", train: bool = True, transform=None) -> None:
 		train_dataset = torchvision.datasets.MNIST(root=file_save_path, train=True, download=True)
 		test_dataset = torchvision.datasets.MNIST(root=file_save_path, train=False, download=True)
 
@@ -30,7 +30,7 @@ class MnistDataset(Dataset):
 		return sample		
 
 class MnistDatafetcher(Datafetcher):
-	def __init__(self: "MnistDatafetcher", file_save_path: str = "./datasets/", transform=None) -> None:
+	def __init__(self: "MnistDatafetcher", file_save_path: str = "./data/", transform=None) -> None:
 		self.train_dataset = MnistDataset(file_save_path, train=True, transform=transform)
 		self.test_dataset = MnistDataset(file_save_path, train=False, transform=transform)
 

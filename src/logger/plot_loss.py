@@ -6,4 +6,4 @@ def plot_loss(losses: List[float], name: str = 'default') -> None:
 	plt.title = 'Training Loss'
 	plt.xlabel = 'Epochs'
 	plt.ylabel = 'Loss'
-	plt.savefig(f'./images/training_loss_curve-{name}.png')
+	plt.savefig(f'./image/training_loss_curve-{name}.png')

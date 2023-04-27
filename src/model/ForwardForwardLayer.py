@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from torchvision.datasets import MNIST
 from torchvision.transforms import Compose, ToTensor, Normalize, Lambda
 from torch.utils.data import DataLoader
-from utils.plotting import plot_training_loss
+from logger.plot_loss import plot_loss
 
 from typing import List
 
@@ -18,13 +18,13 @@ from typing import List
 #        Lambda(lambda x: torch.flatten(x))])
 #
 #    train_loader = DataLoader(
-#        MNIST('./datasets/', train=True,
+#        MNIST('./data/', train=True,
 #              download=True,
 #              transform=transform),
 #        batch_size=train_batch_size, shuffle=False)
 #
 #    test_loader = DataLoader(
-#        MNIST('./datasets/', train=False,
+#        MNIST('./data/', train=False,
 #              download=True,
 #              transform=transform),
 #        batch_size=test_batch_size, shuffle=False)
@@ -37,19 +37,19 @@ def MNIST_loaders(train_batch_size=50000, test_batch_size=10000):
 		Normalize((0.1307,), (0.3081,)),
 		Lambda(lambda x: torch.flatten(x))])
 
-	pos_mnist = MNIST('./datasets/', train=True,
+	pos_mnist = MNIST('./data/', train=True,
 				download=True,
 				transform=transform)
 
-	neg_mnist = MNIST('./datasets/', train=True,
+	neg_mnist = MNIST('./data/', train=True,
 				download=True,
 				transform=transform)
 	
-	pos_mnist_test = MNIST('./datasets/', train=False,
+	pos_mnist_test = MNIST('./data/', train=False,
 				download=True,
 				transform=transform)
 	
-	neg_mnist_test = MNIST('./datasets/', train=False,
+	neg_mnist_test = MNIST('./data/', train=False,
 				download=True,
 				transform=transform)
 	

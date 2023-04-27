@@ -3,7 +3,7 @@ import torchvision
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
-from data.Datafetcher import Datafetcher
+from data_loader.Datafetcher import Datafetcher
 
 class _SimpleDataset(Dataset):
 	def __init__(self: "_SimpleDataset", transform=None) -> None:

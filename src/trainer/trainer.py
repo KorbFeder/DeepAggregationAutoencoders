@@ -5,16 +5,17 @@ from torch.optim import Adam
 from typing import Callable, Optional
 from torch.utils.data import DataLoader
 
-from models.AutoEncoder import AutoEncoder
-from models.DeepAggregateAutoEncoder import DeepAggregateAutoEncoder
-from models.MinMaxAutoEncoder import MinMaxAutoEncoder
-from data.Datafetcher import Datafetcher
-from utils.plotting import progress_bar, plot_training_loss
+from model.AutoEncoder import AutoEncoder
+from model.DeepAggregateAutoEncoder import DeepAggregateAutoEncoder
+from model.MinMaxAutoEncoder import MinMaxAutoEncoder
+from data_loader.Datafetcher import Datafetcher
+from logger.plotting import progress_bar
+from logger.plot_loss import plot_loss
 
 
-class Evaluation:
+class Trainer:
 	def __init__(
-		self: "Evaluation", 
+		self: "Trainer", 
 		model: nn.Module, 
 		data_fetcher: Datafetcher, 
 		epochs: int = 1, 
@@ -36,7 +37,7 @@ class Evaluation:
 		if seed != None:
 			self.set_seeds(seed)
 
-	def train(self: "Evaluation") -> None:
+	def train(self: "Trainer") -> None:
 		optim = Adam(self.model.parameters(), lr=1e-3)
 		flatten = nn.Flatten()
 		losses = []
@@ -74,10 +75,10 @@ class Evaluation:
 		# plot results after end of training
 		with torch.no_grad():
 			if self.epochs > 1:
-				plot_training_loss(losses, self.run_name)
+				plot_loss(losses, self.run_name)
 
 
-	def test(self: "Evaluation") -> None:
+	def test(self: "Trainer") -> None:
 		flatten = nn.Flatten()
 		originals = []
 		outputs = []
@@ -100,7 +101,7 @@ class Evaluation:
 		if self.plot_outputs:
 			self.plot_outputs(originals, outputs)
 
-	def set_seeds(self: "Evaluation", seed: int):
+	def set_seeds(self: "Trainer", seed: int):
 		torch.manual_seed(seed)
 
 	

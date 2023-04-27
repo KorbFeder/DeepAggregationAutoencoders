@@ -1,4 +1,7 @@
 .vscode/
-datasets/MNIST/
-*.png
+data/MNIST/
+image/*
+!image/.gitkeep
+log/*
+!log/.gitkeep
 __pycache__/
