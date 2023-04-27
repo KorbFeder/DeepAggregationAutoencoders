@@ -46,7 +46,9 @@ def visualize_sample(data, name='', idx=0):
     plt.title = name
     plt.imshow(reshaped, cmap="gray")
     plt.show()
-    
+
+# implementation of the local activity contrast (LAC) algorithm implemented in:
+# https://doi.org/10.3390/electronics12010147   
 
 class LacAutoEncoder(nn.Module):
 	def __init__(
