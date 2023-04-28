@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 
 from trainer.base_trainer import BaseTrainer
 from utils.metrics import Metrics
+from torchviz import make_dot
 
 from typing import Dict
 

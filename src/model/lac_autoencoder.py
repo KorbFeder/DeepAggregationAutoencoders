@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.optim import Adam
+from torchviz import make_dot
 
 from typing import List, Tuple, TypedDict, Optional
 
@@ -64,5 +65,8 @@ class LacAutoEncoder(nn.Module):
 
 		# the last layers output
 		output = self.out_layer['activation'](self.out_layer['layer_type'](A.detach()))
+		#dot = make_dot(output, params=dict(self.out_layer['layer_type'].named_parameters()))
+		#dot.format = 'png'
+		#dot.render('./image/computation_graph')
 
 		return hidden_activations, output
