@@ -6,6 +6,7 @@ import argparse
 from trainer.lac_trainer import LacTrainer
 from model.lac_autoencoder import LacAutoEncoder
 from data_loader.mnist_data_loader import MNIST_loaders
+from data_loader.SimpleDatafetcher import SimpleDatafetcher
 from tester.lac_tester import LacTester
 from logger.plot_mnist_outputs import plot_mnist_outputs
 
@@ -28,9 +29,12 @@ if __name__ == "__main__":
 	config = yaml.load(file, Loader=yaml.Loader)
 	device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-	train_loader, test_loader = MNIST_loaders()
-	model = LacAutoEncoder(784, [256, 64, 256], device)
-	trainer = LacTrainer(model, config, device, train_loader)
+	loader, test_loader = MNIST_loaders(128)
+	#data_fetcher = SimpleDatafetcher()
+	#loader = data_fetcher.get_train_dataloader(8)
+
+	model = LacAutoEncoder(784, [1000, 500, 250, 500, 1000], device)
+	trainer = LacTrainer(model, config, device, loader)
 	trainer.train()
 	tester = LacTester(model, device, test_loader, plot_mnist_outputs)
 	tester.test()

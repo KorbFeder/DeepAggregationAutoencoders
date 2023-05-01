@@ -45,8 +45,9 @@ class LacAutoEncoder(nn.Module):
 		h_params = sum([list(layer['layer_type'].parameters()) + list(layer['normalization'].parameters()) for layer in self.layers[:-1]], [])
 		o_params = self.out_layer['layer_type'].parameters()
 
-		self.hidden_optim = Adam(h_params)
-		self.output_optim = Adam(o_params)
+		# parameter from paper which where used for mnist 
+		self.hidden_optim = Adam(h_params, lr=0.001, weight_decay=0.001)
+		self.output_optim = Adam(o_params, lr=0.01, weight_decay=0.001)
 
 	def forward(self: "LacAutoEncoder", x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
 		hidden_activations = torch.Tensor(x.shape[0], self.num_hidden_neurons).to(self.device)

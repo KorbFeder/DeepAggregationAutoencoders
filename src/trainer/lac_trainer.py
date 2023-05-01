@@ -48,5 +48,9 @@ class LacTrainer(BaseTrainer):
 			with torch.no_grad():
 				self.metrics.add(epoch, len(x), [hidden_loss.cpu().item(), output_loss.cpu().item()])
 
+		#dot = make_dot(output_loss)
+		#dot.format = 'png'
+		#dot.render('./image/computation_graph')
+
 		self.metrics.save(self.save_path)
-		self.metrics.plot_loss()
+		self.metrics.plot_loss('train')

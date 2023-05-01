@@ -43,7 +43,7 @@ class BaseTester:
 		
 		if self.plotting:
 			self.plotting(originals, results)
-		self.metrics.plot_loss('test-loss')
+		self.metrics.per_sample_loss('test')
 
 			
 

@@ -1,6 +1,8 @@
 import pandas as pd
 import json
 import os
+from itertools import groupby
+from statistics import mean
 from time import time
 
 from typing import TypedDict, List
@@ -45,10 +47,31 @@ class Metrics:
 	def print_last(self: "Metrics") -> None:
 		print(json.dumps(self.metrics[-1], indent=2, sort_keys=True))
 
-	def plot_loss(self: "Metrics", name: str = 'metric-loss') -> None:
+	def plot_loss(self: "Metrics", name: str = 'train') -> None:
+		self._episodic_loss(name)
+		self.per_sample_loss(name)
+
+	
+	def per_sample_loss(self: "Metrics", name: str):
+		name = name + "-per-sample-loss"
 		losses = list(map(list, zip(*[metric['loss'] for metric in self.metrics])))
-		for loss in losses:
-			plot_loss(loss, name)
+		plot_loss(losses, name)
+	
+	def _episodic_loss(self: "Metrics", name):
+		name = name + "-episodic-loss"
+		groups = groupby(self.metrics, key=lambda x: x['epochs'])
+		avg_losses = []
+
+		for _, group in groups:
+			group = list(group)
+			ep_losses = list(map(list, zip(*[metric['loss'] for metric in group])))
+			avg_losses.append([mean(loss) for loss in ep_losses])
+
+		if len(avg_losses) <= 1:
+			return
+
+		losses = list(map(list, zip(*avg_losses)))
+		plot_loss(losses, name)
 
 	def save(self: "Metrics", save_path: str, name: str = 'results.csv') -> None:
 		df = pd.DataFrame(self.metrics)

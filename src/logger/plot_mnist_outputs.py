@@ -15,3 +15,4 @@ def plot_mnist_outputs(originals: List[torch.Tensor], outputs: List[torch.Tensor
 	if show_plot:
 		plt.show()
 	f.savefig(f"./image/{name}")
+	plt.clf()
