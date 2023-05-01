@@ -7,15 +7,35 @@ from data_loader.Datafetcher import Datafetcher
 
 class _SimpleDataset(Dataset):
 	def __init__(self: "_SimpleDataset", transform=None) -> None:
-		self.data = np.array([1, 2, 3, 1, 2, 1, 4, 1], [1, 1, 1, 1, 1, 1, 1, 1])
+		self.data = np.array([
+			[0, 0, 0, 0],
+			[0, 0, 0, 1], 
+			[0, 0, 1, 0],
+			[0, 0, 1, 1], 
+			[0, 1, 0, 0],
+			[0, 1, 0, 1], 
+			[0, 1, 1, 0],
+			[0, 1, 1, 1], 
+			[1, 0, 0, 0],
+			[1, 0, 0, 1], 
+			[1, 0, 1, 0],
+			[1, 0, 1, 1], 
+			[1, 1, 0, 0],
+			[1, 1, 0, 1], 
+			[1, 1, 1, 0],
+			[1, 1, 1, 1], 
+		], dtype=np.float32)
+
+		self.data = np.array([val for val in self.data for _ in (range(1000))])
+
 		if transform:
 			self.data = transform(self.data)
 	
 	def __len__(self: "_SimpleDataset") -> int:
-		return 1
+		return len(self.data[0])
 
 	def __getitem__(self, index) -> np.ndarray:
-		return self.data
+		return self.data[0][index], self.data[0][index]
 
 class SimpleDatafetcher(Datafetcher):
 	def __init__(self: "SimpleDatafetcher", transform=None) -> None:
