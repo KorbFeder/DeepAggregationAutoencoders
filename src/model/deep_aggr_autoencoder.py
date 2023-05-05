@@ -4,12 +4,8 @@ import numpy as np
 import random
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from time import time
 
 from typing import List, Callable
-
-#def null_operator(x: torch.Tensor):
-#	return torch.zeros(1)
 
 def fuzzy_min(x: torch.Tensor, dim: int=0):
 	return torch.min(x, dim=dim).values
