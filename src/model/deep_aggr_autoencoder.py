@@ -62,7 +62,7 @@ class DeepAggregateLayer(nn.Module):
 		out_indices = torch.arange(self.out_features)
 		conn_indices = self.connection_indices[out_indices].numpy()
 		features = x[:, conn_indices]  
-		return torch.stack([operator(features, dim=2) for operator in self.operator_table], dim=1), self.forward(x)
+		return self.forward(x), torch.stack([operator(features, dim=2) for operator in self.operator_table], dim=1)
 
 class DeepAggregateAutoEncoder(nn.Module):
 	def __init__(
@@ -94,7 +94,7 @@ class DeepAggregateAutoEncoder(nn.Module):
 		i = 0
 
 		for layer in self.layers:
-			act, x = layer(x, True)
+			x, act = layer(x, True)
 
 			new_i = act.shape[2] + i
 			activations[:, :, i:new_i] = act
