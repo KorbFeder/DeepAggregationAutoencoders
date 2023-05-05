@@ -84,17 +84,10 @@ class DeepAggregateAutoEncoder(nn.Module):
 		if is_train:
 			return self._forward_train(x)
 
-		activations = torch.Tensor(x.shape[0], self.num_hidden_neurons)
-		i = 0
-
 		for layer in self.layers:
 			x = layer(x, is_train)
 
-			new_i = x.shape[1] + i
-			activations[:, i:new_i] = x
-			i = new_i
-
-		return x, activations
+		return x
 
 	def _forward_train(self: "DeepAggregateLayer", x: torch.Tensor) -> torch.Tensor:
 		activations = torch.Tensor(x.shape[0], len(self.operator_table), self.num_hidden_neurons)

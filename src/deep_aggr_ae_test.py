@@ -20,7 +20,22 @@ class DeepAggrAutoencoderTest(unittest.TestCase):
 		self.assertTrue(torch.equal(normal_forward, torch.Tensor([[1, 5, 8, 1, 4, 5], [-3, -3, -6, -5, -2, -7]])))
 	
 	def test_autoencoder_forward(self: "DeepAggrAutoencoderTest"):
-		self.assertEqual(0, 0)
+		daae = DeepAggregateAutoEncoder(8, [4], [3, 3])
+		daae.layers = [
+			DeepAggregateLayer(8, 6, 3, create_operator_table()), 
+			DeepAggregateLayer(6, 8, 3, create_operator_table())
+		]
+
+		daae.layers[0].operator_table_indices = [0, 1, 1, 0, 1, 0]
+		daae.layers[1].operator_table_indices = [0, 1, 1, 0, 1, 0, 1, 1]
+		daae.layers[0].connection_indices = torch.Tensor([[0, 1, 2], [2, 3, 4], [5, 6, 7], [0, 1, 4], [1, 2, 3], [4, 5, 6]])
+		daae.layers[1].connection_indices = torch.Tensor([
+			[0, 1, 2], [2, 3, 4], [5, 0, 1], [2, 3, 4], [5, 2, 3], [3, 4, 5], [2, 4, 5], [0, 2, 4]
+		])
+
+		prediciton = daae.forward(torch.Tensor([[1, 2, 3, 4, 5, 6, 7, 8], [-1, -2, -3, -4, -5, -6, -7, -8]]))
+		y = torch.Tensor([[1, 8, 5, 1, 8, 1, 8, 8], [-6, -2, -3, -6, -5, -7, -2, -2]])
+		self.assertTrue(torch.equal(prediciton, y))
 
 if __name__ == '__main__':
 	unittest.main()
