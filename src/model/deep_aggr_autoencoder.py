@@ -74,13 +74,15 @@ class DeepAggregateAutoEncoder(nn.Module):
 		num_connections_per_layer: List[int]
 	) -> None:
 		super().__init__()
-		layer_sizes = [in_features, *hidden_sizes, in_features]
+		layer_sizes = [in_features, *hidden_sizes]
 		self.layers = []
-		self.num_hidden_neurons = sum([*hidden_sizes, in_features])
+		self.num_hidden_neurons = sum([*hidden_sizes])
 		self.operator_table = create_operator_table()
 
 		for i in range(len(layer_sizes)-1):
 			self.layers += [DeepAggregateLayer(layer_sizes[i], layer_sizes[i+1], num_connections_per_layer[i], self.operator_table)]
+		
+		self.output_layer = DeepAggregateLayer(layer_sizes[-1], in_features, num_connections_per_layer[-1], self.operator_table)
 
 	def forward(self: "DeepAggregateAutoEncoder", x: torch.Tensor, is_train: bool = False):
 		if is_train:
@@ -89,7 +91,7 @@ class DeepAggregateAutoEncoder(nn.Module):
 		for layer in self.layers:
 			x = layer(x, is_train)
 
-		return x
+		return self.output_layer(x)
 
 	def _forward_train(self: "DeepAggregateLayer", x: torch.Tensor) -> torch.Tensor:
 		activations = torch.Tensor(x.shape[0], len(self.operator_table), self.num_hidden_neurons)
@@ -102,20 +104,6 @@ class DeepAggregateAutoEncoder(nn.Module):
 			activations[:, :, i:new_i] = act
 			i = new_i
 
-		return x, activations
+		output = self.output_layer(x)
+		return output, activations
 
-class DeepAggregateTrainer:
-	def __init__(
-		self: "DeepAggregateTrainer",
-		model: nn.Module,
-		data_loader: DataLoader
-	) -> None:
-		self.model = model
-		self.data_loader = data_loader
-
-	def train(self: "DeepAggregateTrainer") -> None: 
-		for x, _ in tqdm(self.data_loader):
-			output, target_activation = self.model(x, True)
-			_, prediction_activation = self.model(output, True)
-
-			loss = ((target_activation - prediction_activation) ** 2)

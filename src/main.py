@@ -10,7 +10,8 @@ from data_loader.SimpleDatafetcher import SimpleDatafetcher
 from tester.lac_tester import LacTester
 from logger.plot_mnist_outputs import plot_mnist_outputs
 
-from model.deep_aggr_autoencoder import DeepAggregateTrainer, DeepAggregateAutoEncoder
+from model.deep_aggr_autoencoder import DeepAggregateAutoEncoder
+from trainer.deep_aggr_trainer import DeepAggregateTrainer
 
 def parse_args():
 	parser = argparse.ArgumentParser(description="Training")
@@ -44,5 +45,5 @@ if __name__ == "__main__":
 	#tester.test()
 
 	model = DeepAggregateAutoEncoder(4, [3], [3, 3])
-	trainer = DeepAggregateTrainer(model, loader)
+	trainer = DeepAggregateTrainer(model, loader, config)
 	trainer.train()
