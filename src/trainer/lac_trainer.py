@@ -11,7 +11,7 @@ from typing import Dict
 
 class LacTrainer(BaseTrainer):
 	def __init__(
-		self: "BaseTrainer", 
+		self: "LacTrainer", 
 		model: nn.Module, 
 		config: Dict, 
 		device: torch.device,
@@ -24,7 +24,7 @@ class LacTrainer(BaseTrainer):
 		self.save_path = config['csv_save_path']
 		self.metrics = Metrics()
 
-	def _train_epoch(self: "BaseTrainer", epoch: int):
+	def _train_epoch(self: "LacTrainer", epoch: int):
 		self.model.train()
 		for x, _ in tqdm(self.data_loader):
 			x = x.to(self.device)
@@ -46,7 +46,7 @@ class LacTrainer(BaseTrainer):
 			self.model.output_optim.step()
 
 			with torch.no_grad():
-				self.metrics.add(epoch, len(x), [hidden_loss.cpu().item(), output_loss.cpu().item()])
+				self.metrics.add(epoch, len(x), [output_loss.cpu().item(), hidden_loss.cpu().item()])
 
 		#dot = make_dot(output_loss)
 		#dot.format = 'png'

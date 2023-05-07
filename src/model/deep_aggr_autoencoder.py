@@ -5,7 +5,7 @@ import random
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 
-from typing import List, Callable
+from typing import List, Callable, Tuple
 
 def fuzzy_min(x: torch.Tensor, dim: int=0):
 	return torch.min(x, dim=dim).values
@@ -58,7 +58,7 @@ class DeepAggregateLayer(nn.Module):
 	
 		return result
 	
-	def _forward_train(self: "DeepAggregateLayer", x: torch.Tensor) -> torch.Tensor:
+	def _forward_train(self: "DeepAggregateLayer", x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
 		out_indices = torch.arange(self.out_features)
 		conn_indices = self.connection_indices[out_indices].numpy()
 		features = x[:, conn_indices]  
@@ -84,7 +84,7 @@ class DeepAggregateAutoEncoder(nn.Module):
 		
 		self.output_layer = DeepAggregateLayer(layer_sizes[-1], in_features, num_connections_per_layer[-1], self.operator_table)
 
-	def forward(self: "DeepAggregateAutoEncoder", x: torch.Tensor, is_train: bool = False):
+	def forward(self: "DeepAggregateAutoEncoder", x: torch.Tensor, is_train: bool = False) -> torch.Tensor:
 		if is_train:
 			return self._forward_train(x)
 
@@ -93,17 +93,34 @@ class DeepAggregateAutoEncoder(nn.Module):
 
 		return self.output_layer(x)
 
-	def _forward_train(self: "DeepAggregateLayer", x: torch.Tensor) -> torch.Tensor:
-		activations = torch.Tensor(x.shape[0], len(self.operator_table), self.num_hidden_neurons)
-		i = 0
+	def _forward_train(self: "DeepAggregateAutoEncoder", x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+		layer_activations = torch.tensor(len(self.layers), )
+		layer_activations = []
 
 		for layer in self.layers:
-			x, act = layer(x, True)
+			x, activation = layer(x, True)
+			layer_activations.append(activation)
 
-			new_i = act.shape[2] + i
-			activations[:, :, i:new_i] = act
-			i = new_i
+		output, output_activation = self.output_layer(x, True)
 
-		output = self.output_layer(x)
-		return output, activations
+		layer_activations.append(output_activation)
+		return output, np.array(layer_activations)
+
+	def train(self: "DeepAggregateAutoEncoder", x: torch.Tensor) -> Tuple[float, float]:
+		output, target_activation = self.forward(x, True)
+		_, prediction_activation = self.forward(output, True)
+
+		hidden_loss = ((target_activation[:-1] - prediction_activation[:-1]) ** 2)
+		output_loss = ((target_activation[-1] - np.repeat(x[:, np.newaxis, :], target_activation[-1].shape[1], axis=1)) ** 2)
+
+		for loss, layer in zip(hidden_loss, self.layers):
+			indices = torch.argmin(loss, dim=1)
+			indices_occurrences = indices.mode(dim=0).values
+			layer.operator_table_indices = indices_occurrences.tolist()
+
+		indices = torch.argmin(output_loss, dim=1)
+		indices_occurrences = indices.mode(dim=0).values
+		self.output_layer.operator_table_indices = indices_occurrences.tolist()
+		
+		return output_loss.sum().item(), hidden_loss.sum().sum().item()
 

@@ -53,18 +53,36 @@ class DeepAggrAutoencoderTest(unittest.TestCase):
 
 		prediciton, activation = daae.forward(torch.Tensor([[1, 2, 3, 4, 5, 6, 7, 8], [-1, -2, -3, -4, -5, -6, -7, -8]]), is_train=True)
 		y = torch.Tensor([[1, 8, 5, 1, 8, 1, 8, 8], [-6, -2, -3, -6, -5, -7, -2, -2]])
-		y_activation = torch.Tensor([
-			[
-				[1, 3, 6, 1, 2, 5], 
-				[3, 5, 8, 5, 4, 7], 
-			], [
-				[-3, -5, -8, -5, -4, -7],
-				[-1, -3, -6, -1, -2, -5]
-			]
-		])
+		
+		y_activation = [
+			torch.Tensor([
+				[
+					[1, 3, 6, 1, 2, 5], 
+					[3, 5, 8, 5, 4, 7], 
+				], [
+					[-3, -5, -8, -5, -4, -7],
+					[-1, -3, -6, -1, -2, -5]
+				]
+			]),
+			torch.Tensor([
+				[
+					[1, 1, 1, 1, 1, 1, 4, 1],
+					[8, 8, 5, 8, 8, 5, 8, 8]
+				],
+				[
+					[-6, -6, -7, -6, -7, -7, -7, -6],
+					[-3, -2, -3, -2, -5, -2, -2, -2]
+				]
+			])
+		]
 
 		self.assertTrue(torch.equal(prediciton, y))
-		self.assertTrue(torch.equal(y_activation, activation))
+
+		is_true = True
+		for y_act, act in zip(y_activation, activation):
+			if torch.equal(y_act, act) == False:
+				is_true = False
+		self.assertTrue(is_true)
 	
 
 if __name__ == '__main__':
