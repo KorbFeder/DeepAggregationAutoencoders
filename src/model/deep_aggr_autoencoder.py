@@ -2,10 +2,13 @@ import torch
 import torch.nn as nn
 import numpy as np
 import random
-from tqdm import tqdm
-from torch.utils.data import DataLoader
 
 from typing import List, Callable, Tuple
+
+# todo fix warings
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=np.VisibleDeprecationWarning)
 
 def fuzzy_min(x: torch.Tensor, dim: int=0):
 	return torch.min(x, dim=dim).values
@@ -93,7 +96,7 @@ class DeepAggregateAutoEncoder(nn.Module):
 
 		return self.output_layer(x)
 
-	def _forward_train(self: "DeepAggregateAutoEncoder", x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+	def _forward_train(self: "DeepAggregateAutoEncoder", x: torch.Tensor) -> Tuple[torch.Tensor, np.ndarray]:
 		layer_activations = torch.tensor(len(self.layers), )
 		layer_activations = []
 
@@ -104,6 +107,7 @@ class DeepAggregateAutoEncoder(nn.Module):
 		output, output_activation = self.output_layer(x, True)
 
 		layer_activations.append(output_activation)
+		# np array gives a waring maybe improve this
 		return output, np.array(layer_activations)
 
 	def train(self: "DeepAggregateAutoEncoder", x: torch.Tensor) -> Tuple[float, float]:
@@ -113,6 +117,7 @@ class DeepAggregateAutoEncoder(nn.Module):
 		hidden_loss = ((target_activation[:-1] - prediction_activation[:-1]) ** 2)
 		output_loss = ((target_activation[-1] - np.repeat(x[:, np.newaxis, :], target_activation[-1].shape[1], axis=1)) ** 2)
 
+		# @todo -> if two operators would have the same loss the first one gets chosen, better stay at the current one
 		for loss, layer in zip(hidden_loss, self.layers):
 			indices = torch.argmin(loss, dim=1)
 			indices_occurrences = indices.mode(dim=0).values
@@ -122,5 +127,5 @@ class DeepAggregateAutoEncoder(nn.Module):
 		indices_occurrences = indices.mode(dim=0).values
 		self.output_layer.operator_table_indices = indices_occurrences.tolist()
 		
-		return output_loss.sum().item(), hidden_loss.sum().sum().item()
+		return nn.MSELoss()(output, x).item() # output_loss.sum().item() #, hidden_loss.sum().sum().item()
 

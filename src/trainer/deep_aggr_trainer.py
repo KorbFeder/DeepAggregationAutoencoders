@@ -22,8 +22,8 @@ class DeepAggregateTrainer(BaseTrainer):
 
 	def _train_epoch(self: "DeepAggregateTrainer", epoch: int) -> None: 
 		for x, _ in tqdm(self.data_loader):
-			output_loss, hidden_loss = self.model.train(x)
-			self.metrics.add(epoch, len(x), [output_loss, hidden_loss])
+			output_loss = self.model.train(x)
+			self.metrics.add(epoch, len(x), [output_loss])
 
 		self.metrics.save(self.save_path)
 		self.metrics.plot_loss('train')

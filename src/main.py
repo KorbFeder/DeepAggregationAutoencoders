@@ -32,9 +32,9 @@ if __name__ == "__main__":
 	config = yaml.load(file, Loader=yaml.Loader)
 	device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-	#loader, test_loader = MNIST_loaders(32)
+	loader, test_loader = MNIST_loaders(32)
 	datafetcher = SimpleDatafetcher()
-	loader = datafetcher.get_train_dataloader(3)
+	#loader = datafetcher.get_train_dataloader(3)
 	#data_fetcher = SimpleDatafetcher()
 	#loader = data_fetcher.get_train_dataloader(8)
 
@@ -44,6 +44,6 @@ if __name__ == "__main__":
 	#tester = LacTester(model, device, test_loader, plot_mnist_outputs)
 	#tester.test()
 
-	model = DeepAggregateAutoEncoder(4, [3], [3, 3])
+	model = DeepAggregateAutoEncoder(784, [512, 256, 512], [10, 6, 6, 10])
 	trainer = DeepAggregateTrainer(model, loader, config)
 	trainer.train()
