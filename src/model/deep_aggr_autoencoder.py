@@ -4,11 +4,16 @@ import numpy as np
 import random
 
 from typing import List, Callable, Tuple
+from enum import Enum
 
 # todo fix warings
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=np.VisibleDeprecationWarning)
+
+class DeepAggrModes(Enum):
+	standard = 0,
+	counting = 1
 
 def fuzzy_min(x: torch.Tensor, dim: int=0):
 	return torch.min(x, dim=dim).values
@@ -29,7 +34,7 @@ class DeepAggregateLayer(nn.Module):
 		in_features: int, 
 		out_features: int, 
 		num_connections: int,
-		operator_table: List[Callable[[torch.Tensor, int], torch.Tensor]]
+		operator_table: List[Callable[[torch.Tensor, int], torch.Tensor]],
 	) -> None:
 		super().__init__()
 
@@ -39,6 +44,7 @@ class DeepAggregateLayer(nn.Module):
 
 		# table of indices that gives each neuron an index to an operator from the operator table
 		self.operator_table_indices = [random.randint(0, len(self.operator_table) - 1) for _ in range(out_features)]
+		self.operator_table_count = torch.zeros((out_features, len(self.operator_table)))
 
 		# creates indices on the inputs that are connected to each node
 		self.connection_indices = torch.zeros(out_features, num_connections)
@@ -74,9 +80,11 @@ class DeepAggregateAutoEncoder(nn.Module):
 		self: "DeepAggregateAutoEncoder",
 		in_features: int,
 		hidden_sizes: List[int],
-		num_connections_per_layer: List[int]
+		num_connections_per_layer: List[int],
+		mode: DeepAggrModes = DeepAggrModes.counting
 	) -> None:
 		super().__init__()
+		self.mode = mode
 		layer_sizes = [in_features, *hidden_sizes]
 		self.layers = []
 		self.num_hidden_neurons = sum([*hidden_sizes])
@@ -121,11 +129,17 @@ class DeepAggregateAutoEncoder(nn.Module):
 		for loss, layer in zip(hidden_loss, self.layers):
 			indices = torch.argmin(loss, dim=1)
 			indices_occurrences = indices.mode(dim=0).values
-			layer.operator_table_indices = indices_occurrences.tolist()
+
+			if self.mode == DeepAggrModes.standard:
+				layer.operator_table_indices = indices_occurrences.tolist()
+			elif self.mode == DeepAggrModes.counting:
+				layer.operator_table_count[np.arange(len(indices_occurrences.tolist())), indices_occurrences.tolist()] += 1
+				layer.operator_table_indices = layer.operator_table_count.argmax(dim=1)
+
+
 
 		indices = torch.argmin(output_loss, dim=1)
 		indices_occurrences = indices.mode(dim=0).values
 		self.output_layer.operator_table_indices = indices_occurrences.tolist()
 		
 		return nn.MSELoss()(output, x).item() # output_loss.sum().item() #, hidden_loss.sum().sum().item()
-
