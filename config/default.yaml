@@ -1,4 +1,8 @@
 trainer: 
   epochs: 8 
 
-csv_save_path: './log'
+path: 
+  csv_save_path: './log'
+  csv_name: 'result.csv'
+  plot_save_path: './image'
+  plot_name: 'first'

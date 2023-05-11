@@ -38,7 +38,7 @@ class Metrics:
 			'iterations': self.curr_iteration
 		})
 
-	def reset(self: "Metrics"):
+	def reset(self: "Metrics") -> None:
 		self.metrics: List[MetricType] = []
 		self.first_time = time()
 		self.total_num_of_samples = 0
@@ -47,17 +47,17 @@ class Metrics:
 	def print_last(self: "Metrics") -> None:
 		print(json.dumps(self.metrics[-1], indent=2, sort_keys=True))
 
-	def plot_loss(self: "Metrics", name: str = 'train') -> None:
+	def plot_loss(self: "Metrics", save_path: str, name: str = 'train') -> None:
 		self._episodic_loss(name)
 		self.per_sample_loss(name)
 
 	
-	def per_sample_loss(self: "Metrics", name: str):
+	def per_sample_loss(self: "Metrics", save_path: str, name: str) -> None:
 		name = name + "-per-sample-loss"
 		losses = list(map(list, zip(*[metric['loss'] for metric in self.metrics])))
 		plot_loss(losses, name)
 	
-	def _episodic_loss(self: "Metrics", name):
+	def _episodic_loss(self: "Metrics", save_path: str, name: str) -> None:
 		name = name + "-episodic-loss"
 		groups = groupby(self.metrics, key=lambda x: x['epochs'])
 		avg_losses = []

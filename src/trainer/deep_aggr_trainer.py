@@ -11,19 +11,15 @@ class DeepAggregateTrainer(BaseTrainer):
 	def __init__(
 		self: "DeepAggregateTrainer",
 		model: nn.Module,
+		config: Dict,
 		data_loader: DataLoader,
-		config: Dict
 	) -> None:
-		super().__init__(model, None, None, config)
+		super().__init__(model, config, None, None)
 		self.model = model
 		self.data_loader = data_loader
-		self.save_path = config['csv_save_path']
 		self.metrics = Metrics()
 
 	def _train_epoch(self: "DeepAggregateTrainer", epoch: int) -> None: 
 		for x, _ in tqdm(self.data_loader):
 			output_loss = self.model.train(x)
 			self.metrics.add(epoch, len(x), [output_loss])
-
-		self.metrics.save(self.save_path)
-		self.metrics.plot_loss('train')

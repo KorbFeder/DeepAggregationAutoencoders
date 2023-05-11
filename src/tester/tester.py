@@ -6,9 +6,7 @@ from typing import Callable, List, Optional, Dict
 
 from tester.base_tester import BaseTester
 
-
-
-class LacTester(BaseTester):
+class Tester(BaseTester):
 	def __init__(
 		self: "BaseTester", 
 		model: nn.Module, 
@@ -20,5 +18,5 @@ class LacTester(BaseTester):
 		super().__init__(model, config, device, data_loader, plotting)
 
 	def _test(self: "BaseTester", x: torch.Tensor) -> torch.Tensor:
-		_, x = self.model(x)
+		x = self.model(x)
 		return x

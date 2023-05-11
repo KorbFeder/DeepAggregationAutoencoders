@@ -5,7 +5,6 @@ from torch.utils.data import DataLoader
 
 from trainer.base_trainer import BaseTrainer
 from utils.metrics import Metrics
-from torchviz import make_dot
 
 from typing import Dict
 
@@ -17,12 +16,10 @@ class LacTrainer(BaseTrainer):
 		device: torch.device,
 		data_loader: DataLoader
 	) -> None:
-		super().__init__(model, None, None, config)
+		super().__init__(model, config, None, None)
 		self.config = config
 		self.device = device
 		self.data_loader = data_loader
-		self.save_path = config['csv_save_path']
-		self.metrics = Metrics()
 
 	def _train_epoch(self: "LacTrainer", epoch: int):
 		self.model.train()
@@ -52,5 +49,3 @@ class LacTrainer(BaseTrainer):
 		#dot.format = 'png'
 		#dot.render('./image/computation_graph')
 
-		self.metrics.save(self.save_path)
-		self.metrics.plot_loss('train')

@@ -4,7 +4,7 @@ import torch.nn as nn
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Dict
 
 from utils.metrics import Metrics
 
@@ -12,6 +12,7 @@ class BaseTester:
 	def __init__(
 		self: "BaseTester",
 		model: nn.Module,
+		config: Dict,
 		device: torch.device,
 		data_loader: DataLoader,
 		plotting: Optional[Callable[[List[torch.Tensor], List[torch.Tensor]], None]] = None
@@ -20,7 +21,15 @@ class BaseTester:
 		self.device = device
 		self.data_loader = data_loader
 		self.plotting = plotting
-		self.metrics = Metrics()
+		self.config = config
+
+		path_config = config['path']
+		self.csv_save_path = path_config['csv_save_path']
+		self.csv_name = path_config['csv_name']
+		self.plot_save_path = path_config['plot_save_path']
+		self.plot_name = path_config['plot_name']
+	
+		self.metrics: Metrics = Metrics()
 
 	@abstractmethod
 	def _test(self: "BaseTester", x: torch.Tensor) -> torch.Tensor:
@@ -42,8 +51,9 @@ class BaseTester:
 				self.metrics.add(1, len(x), [error.cpu().item()])
 		
 		if self.plotting:
-			self.plotting(originals, results)
-		self.metrics.per_sample_loss('test')
+			self.plotting(originals, results, save_path=self.plot_save_path, name=f"test-{self.plot_name}")
+		self.metrics.per_sample_loss(self.plot_save_path, f"test-{self.plot_name}")
+		self.metrics.save(self.csv_save_path, f"test-{self.csv_name}")
 
 			
 
