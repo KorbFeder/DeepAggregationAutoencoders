@@ -3,7 +3,7 @@ import torchvision
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
-from data_loader.Datafetcher import Datafetcher
+from typing import Tuple
 
 class _SimpleDataset(Dataset):
 	def __init__(self: "_SimpleDataset", transform=None) -> None:
@@ -37,24 +37,14 @@ class _SimpleDataset(Dataset):
 	def __getitem__(self, index) -> np.ndarray:
 		return self.data[0][index], self.data[0][index]
 
-class SimpleDatafetcher(Datafetcher):
-	def __init__(self: "SimpleDatafetcher", transform=None) -> None:
+def simple_data_loaders(train_batch_size: int, test_batch_size: int, transform = None) -> Tuple[DataLoader, DataLoader]:
 		if transform:
 			transformations = torchvision.transforms.Compose([torchvision.transforms.ToTensor(), transform])
 		else:
 			transformations = torchvision.transforms.ToTensor()
 		
-		self.train_data = _SimpleDataset(transform=transformations)
-		self.test_data = _SimpleDataset(transform=transformations)
-
-	def get_train_dataset(self: "SimpleDatafetcher") -> _SimpleDataset:
-		return self.train_data
-		
-	def get_test_dataset(self: "SimpleDatafetcher") -> _SimpleDataset:
-		return self.test_data
-
-	def get_train_dataloader(self: "SimpleDatafetcher", batch_size: int = 32) -> DataLoader:
-		return DataLoader(self.train_data, batch_size=batch_size, shuffle=True, pin_memory=True)
-	
-	def get_test_dataloader(self: "SimpleDatafetcher", batch_size: int = 32) -> DataLoader:
-		return DataLoader(self.test_data, batch_size=batch_size, shuffle=False)
+		train_data = _SimpleDataset(transform=transformations)
+		test_data = _SimpleDataset(transform=transformations)
+		train_data_loader = DataLoader(train_data, batch_size=train_batch_size, shuffle=True, pin_memory=True)
+		test_data_loader = DataLoader(test_data, batch_size=test_batch_size, shuffle=False)
+		return train_data_loader, test_data_loader

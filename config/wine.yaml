@@ -3,16 +3,16 @@ data:
   train_batch_size: 32
   test_batch_size: 32
   # The dataset to use options are: mnist, wine, or simple for example: dataset: 'mnist'
-  dataset: 'mnist'
+  dataset: 'wine'
 
 trainer: 
-  epochs: 10
+  epochs: 100
 
 model:
   # The input features as int, will also be the output features example: in_out_features: 784 
-  in_out_features: 784 
+  in_out_features: 12
   # The hidden sizes of the layers between input and ouput for example: hidden_sizes: [512, 256, 512]
-  hidden_sizes: [512, 256, 512]
+  hidden_sizes: [8, 6, 4, 6, 8]
   # Options are: 'cuda', 'cpu'
   device: 'cuda'
 
@@ -20,4 +20,4 @@ path:
   csv_save_path: './log'
   csv_name: 'result.csv'
   plot_save_path: './image'
-  plot_name: 'mnist'
+  plot_name: 'autoencoder'

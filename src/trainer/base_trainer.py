@@ -19,13 +19,15 @@ class BaseTrainer:
 		self.start_epoch = 1
 		self.config = config
 
+
 		trainer_config = config['trainer']	
 		self.epochs = trainer_config['epochs']
 		path_config = config['path']
+		dataset = config['data']['dataset']
 		self.csv_save_path = path_config['csv_save_path']
-		self.csv_name = path_config['csv_name']
+		self.csv_name = f"{dataset}-{path_config['csv_name']}"
 		self.plot_save_path = path_config['plot_save_path']
-		self.plot_name = path_config['plot_name']
+		self.plot_name = f"{dataset}-{path_config['plot_name']}"
 	
 		self.metrics: Metrics = Metrics()
 
@@ -34,6 +36,7 @@ class BaseTrainer:
 		raise NotImplementedError
 
 	def train(self: "BaseTrainer"):
+		self.model.train()
 		for epoch in range(self.start_epoch, self.epochs + 1):
 			print(f"training {epoch}/{self.epochs} ...")
 			self._train_epoch(epoch)

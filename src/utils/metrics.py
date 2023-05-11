@@ -48,14 +48,14 @@ class Metrics:
 		print(json.dumps(self.metrics[-1], indent=2, sort_keys=True))
 
 	def plot_loss(self: "Metrics", save_path: str, name: str = 'train') -> None:
-		self._episodic_loss(name)
-		self.per_sample_loss(name)
+		self._episodic_loss(save_path, name)
+		self.per_sample_loss(save_path, name)
 
 	
 	def per_sample_loss(self: "Metrics", save_path: str, name: str) -> None:
 		name = name + "-per-sample-loss"
 		losses = list(map(list, zip(*[metric['loss'] for metric in self.metrics])))
-		plot_loss(losses, name)
+		plot_loss(losses, save_path, name)
 	
 	def _episodic_loss(self: "Metrics", save_path: str, name: str) -> None:
 		name = name + "-episodic-loss"
@@ -71,7 +71,7 @@ class Metrics:
 			return
 
 		losses = list(map(list, zip(*avg_losses)))
-		plot_loss(losses, name)
+		plot_loss(losses, save_path, name)
 
 	def save(self: "Metrics", save_path: str, name: str = 'results.csv') -> None:
 		df = pd.DataFrame(self.metrics)

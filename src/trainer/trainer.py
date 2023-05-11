@@ -4,15 +4,7 @@ from torch.optim import Adam
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 
-from model.AutoEncoder import AutoEncoder
-from model.DeepAggregateAutoEncoder import DeepAggregateAutoEncoder
-from model.MinMaxAutoEncoder import MinMaxAutoEncoder
-from torch.utils.data import DataLoader
-
-from logger.plotting import progress_bar
-from logger.plot_loss import plot_loss
 from trainer.base_trainer import BaseTrainer
-from utils.metrics import Metrics
 
 from typing import Dict
 
@@ -38,7 +30,7 @@ class Trainer(BaseTrainer):
 		self.model.train()
 		for batch_features, _ in tqdm(self.data_loader):
 
-			batch_features = flatten(batch_features)
+			batch_features = flatten(batch_features).to(self.device)
 
 			optim.zero_grad()
 
@@ -51,7 +43,7 @@ class Trainer(BaseTrainer):
 
 			# save data for plotting
 			with torch.no_grad():
-				self.metrics.add(epoch, len(batch_features), [train_loss])
+				self.metrics.add(epoch, len(batch_features), [train_loss.item()])
 
 
 	

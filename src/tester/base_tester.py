@@ -24,10 +24,11 @@ class BaseTester:
 		self.config = config
 
 		path_config = config['path']
+		dataset = config['data']['dataset']
 		self.csv_save_path = path_config['csv_save_path']
-		self.csv_name = path_config['csv_name']
+		self.csv_name = f"{dataset}-{path_config['csv_name']}"
 		self.plot_save_path = path_config['plot_save_path']
-		self.plot_name = path_config['plot_name']
+		self.plot_name = f"{dataset}-{path_config['plot_name']}"
 	
 		self.metrics: Metrics = Metrics()
 
@@ -40,6 +41,8 @@ class BaseTester:
 		results = []
 		originals = []
 		error = []
+
+		self.model.eval()
 		for x, _ in tqdm(self.data_loader):
 			with torch.no_grad():
 				x = x.to(self.device)
