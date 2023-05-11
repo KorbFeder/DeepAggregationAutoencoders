@@ -36,7 +36,6 @@ class BaseTrainer:
 		raise NotImplementedError
 
 	def train(self: "BaseTrainer"):
-		self.model.train()
 		for epoch in range(self.start_epoch, self.epochs + 1):
 			print(f"training {epoch}/{self.epochs} ...")
 			self._train_epoch(epoch)

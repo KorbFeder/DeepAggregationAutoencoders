@@ -20,4 +20,4 @@ path:
   csv_save_path: './log'
   csv_name: 'result.csv'
   plot_save_path: './image'
-  plot_name: 'mnist'
+  plot_name: 'autoencoder'

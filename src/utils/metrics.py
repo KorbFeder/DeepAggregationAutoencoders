@@ -55,7 +55,7 @@ class Metrics:
 	def per_sample_loss(self: "Metrics", save_path: str, name: str) -> None:
 		name = name + "-per-sample-loss"
 		losses = list(map(list, zip(*[metric['loss'] for metric in self.metrics])))
-		plot_loss(losses, save_path, name)
+		plot_loss(losses, save_path, name, y_label='Samples')
 	
 	def _episodic_loss(self: "Metrics", save_path: str, name: str) -> None:
 		name = name + "-episodic-loss"

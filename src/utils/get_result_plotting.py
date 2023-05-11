@@ -6,7 +6,6 @@ def get_result_plotting(name: DatasetName):
 	if name == DatasetName.mnist.value:
 		return plot_mnist_outputs
 	elif name == DatasetName.wine.value:
-		#return plot_wine_results
-		return None
+		return plot_wine_results
 	else:
 		return None

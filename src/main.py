@@ -30,3 +30,4 @@ if __name__ == "__main__":
 
 	experiments = Experiments(config)
 	experiments.default_auto_encoder()
+	#experiments.deep_aggr_auto_enc()

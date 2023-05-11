@@ -52,20 +52,21 @@ class DeepAggregateLayer(nn.Module):
 			self.connection_indices[i] = torch.randperm(in_features)[:num_connections]
 
 	def forward(self: "DeepAggregateLayer", x: torch.Tensor, is_train: bool = False) -> torch.Tensor:
+		fwd, output =  self._forward_train(x)
 		if is_train:
-			return self._forward_train(x)
+			return fwd, output
 
 		# @Todo -> maybe make this more efficient
-		batch_size = x.shape[0]
-		result = torch.zeros(batch_size, self.out_features)
+		#batch_size = x.shape[0]
+		#result = torch.zeros(batch_size, self.out_features)
 
-		for i in range(self.out_features):
-			operator_index = self.operator_table_indices[i]
-			operator = self.operator_table[operator_index]
-			for u in range(batch_size):
-				result[u][i] = operator(x[u][self.connection_indices[i].numpy()])
+		#for i in range(self.out_features):
+		#	operator_index = self.operator_table_indices[i]
+		#	operator = self.operator_table[operator_index]
+		#	for u in range(batch_size):
+		#		result[u][i] = operator(x[u][self.connection_indices[i].numpy()])
 	
-		return result
+		return fwd
 	
 	def _forward_train(self: "DeepAggregateLayer", x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
 		out_indices = torch.arange(self.out_features)
@@ -81,7 +82,7 @@ class DeepAggregateAutoEncoder(nn.Module):
 		in_features: int,
 		hidden_sizes: List[int],
 		num_connections_per_layer: List[int],
-		mode: DeepAggrModes = DeepAggrModes.counting
+		mode: DeepAggrModes = DeepAggrModes.standard
 	) -> None:
 		super().__init__()
 		self.mode = mode

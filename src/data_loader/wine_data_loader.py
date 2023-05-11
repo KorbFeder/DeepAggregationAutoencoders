@@ -2,15 +2,22 @@ import torch
 import pandas as pd
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
+from sklearn.preprocessing import MinMaxScaler
 
 from typing import List, Tuple
+
+scaler = MinMaxScaler()
 
 class _WineQualityDataset(Dataset):
 	def __init__(self: "_WineQualityDataset", file_path: str, train: bool = True, transform = None) -> None:
 		self.data = pd.read_csv(file_path, sep=';')
+		scaler.fit(self.data)
 
 		train_dataset = self.data.sample(frac=0.8,random_state=200)
 		test_dataset = self.data.drop(train_dataset.index)
+
+		train_dataset = scaler.transform(train_dataset)
+		test_dataset = scaler.transform(test_dataset)
 
 		if train:
 			self.data = train_dataset

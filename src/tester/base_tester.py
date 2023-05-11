@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 from typing import Callable, List, Optional, Dict
 
 from utils.metrics import Metrics
+from logger.output_to_csv import output_to_csv
 
 class BaseTester:
 	def __init__(
@@ -42,7 +43,6 @@ class BaseTester:
 		originals = []
 		error = []
 
-		self.model.eval()
 		for x, _ in tqdm(self.data_loader):
 			with torch.no_grad():
 				x = x.to(self.device)
@@ -55,6 +55,8 @@ class BaseTester:
 		
 		if self.plotting:
 			self.plotting(originals, results, save_path=self.plot_save_path, name=f"test-{self.plot_name}")
+		output_to_csv(originals, results, self.csv_save_path, f"test-{self.plot_name}")
+		
 		self.metrics.per_sample_loss(self.plot_save_path, f"test-{self.plot_name}")
 		self.metrics.save(self.csv_save_path, f"test-{self.csv_name}")
 
