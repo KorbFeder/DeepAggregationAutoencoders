@@ -17,44 +17,55 @@ class DdlgLayer(nn.Module):
 		self: "DdlgLayer",
 		in_features: int,
 		out_features: int,
-		num_logic_functions: int,
-		num_connection: int,
+		num_connections: int,
 		device: torch.device,
 	) -> None:
 		super().__init__()
 
-		assert num_connection < in_features
+		assert num_connections < in_features
 
 		self.device = device
-		self.weights = nn.parameter.Parameter(torch.randn(num_logic_functions))
-		self.in_dim = in_features
-		self.out_dim = out_features
 		self.logic_functions = create_function_table()
+		self.weights = nn.parameter.Parameter(torch.randn(out_features, len(self.logic_functions), device=device))
+		self.in_features = in_features
+		self.out_features = out_features
 
 		# creates indices on the inputs that are connected to each node
-		self.connections = torch.zeros(in_features, out_features)
-		for connection in self.connections:
-			connection[torch.randperm(in_features)[:num_connection]] = 1
+		self.connection_indices = torch.zeros(out_features, num_connections).to(device)
+		for i in range(len(self.connection_indices)): 
+			self.connection_indices[i] = torch.randperm(in_features)[:num_connections]
 
 	def forward(self: "DdlgLayer", x: torch.Tensor):
 		# only use the chosen connections 
-		x = torch.mul(self.connections, x)
-		prob = nn.Softmax(self.weights)
+		out_indices = torch.arange(self.out_features).to(self.device)
+		conn_indices = self.connection_indices[out_indices].cpu().numpy()
+		features = x[:, conn_indices].to(self.device)  
+		prob = nn.functional.softmax(self.weights, dim=-1)
 
-
-
-
+		result = torch.zeros((len(x), self.out_features)).to(self.device)
+		for i, op in enumerate(self.logic_functions):
+			op_result = op(features, dim=-1).values
+			result = result + prob[..., i] * op_result
+		return result
 
 class DdlgAutoencoder(nn.Module):
 	def __init__(
 		self: "DdlgAutoencoder",
 		in_features: int,
 		hidden_sizes: List[int],
+		num_connections: int,
 		device: torch.device,
-		activation: nn.Module = nn.ReLU(),
-		out_activation: nn.Module = nn.Sigmoid()
 	
 	) -> None:
 		super().__init__()
+		self.device = device
+		layer_sizes = [in_features, *hidden_sizes, in_features]
+		layers = []
 
-DdlgLayer(10, 10, 3, 3, None)
+		for i in range(len(layer_sizes)-1):
+			layers += [DdlgLayer(layer_sizes[i], layer_sizes[i + 1], num_connections, device)]
+
+		self.net = nn.Sequential(*layers).to(self.device)
+	
+	def forward(self: "DdlgAutoencoder", x: torch.Tensor)-> torch.Tensor:
+		return self.net(x.to(self.device))

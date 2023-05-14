@@ -2,9 +2,6 @@ import torch
 from fuzzy_logic.Membership import Membership
 
 class HighMembership(Membership):
-	def __init__(self: "HighMembership") -> None:
-		pass
-
 	def fuzzification(self: "HighMembership", data: torch.Tensor) -> torch.Tensor:
 		self.col_min = data.min(dim=0).values
 		self.col_max = data.max(dim=0).values
@@ -24,7 +21,6 @@ class HighMembership(Membership):
 				else: 
 					output[i][u] = x * (curr_max - curr_min) + curr_min 
 		return output
-
 
 	def _high_membership(self: "HighMembership", input_data: torch.Tensor) -> torch.Tensor:
 		output = torch.Tensor(input_data.shape)

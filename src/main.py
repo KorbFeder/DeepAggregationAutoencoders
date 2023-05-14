@@ -9,7 +9,7 @@ from experiments import Experiments
 def parse_args():
 	parser = argparse.ArgumentParser(description="Training")
 
-	parser.add_argument('--config', '-c', default='wine', type=str, 
+	parser.add_argument('--config', '-c', default='default', type=str, 
 		help='Configuration file. Use name without extension and without file path')
 	
 	return parser.parse_args()
@@ -29,5 +29,6 @@ if __name__ == "__main__":
 		device = torch.device('cpu')
 
 	experiments = Experiments(config)
-	experiments.default_auto_encoder()
-	#experiments.deep_aggr_auto_enc()
+	#experiments.default_autoencoder()
+	#experiments.deep_aggr_autoenc()
+	experiments.ddlg_autoencoder()
