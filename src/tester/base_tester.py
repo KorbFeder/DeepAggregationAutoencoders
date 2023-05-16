@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from tqdm import tqdm
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 
 from typing import Callable, List, Optional, Dict
 
@@ -16,12 +17,14 @@ class BaseTester:
 		config: Dict,
 		device: torch.device,
 		data_loader: DataLoader,
-		plotting: Optional[Callable[[List[torch.Tensor], List[torch.Tensor]], None]] = None
+		plotting: Optional[Callable[[List[torch.Tensor], List[torch.Tensor]], None]] = None,
+		tensorboard_grpah: bool = False
 	) -> None:
 		self.model = model
 		self.device = device
 		self.data_loader = data_loader
 		self.plotting = plotting
+		self.tensorboard_graph = tensorboard_grpah
 		self.config = config
 
 		path_config = config['path']
@@ -56,6 +59,12 @@ class BaseTester:
 		if self.plotting:
 			self.plotting(originals, results, save_path=self.plot_save_path, name=f"test-{self.plot_name}")
 		output_to_csv(originals, results, self.csv_save_path, f"test-{self.plot_name}")
+
+		if self.tensorboard_graph:
+			writer = SummaryWriter(self.plot_save_path)
+			a = next(iter(self.data_loader))
+			writer.add_graph(self.model, a[0])
+			writer.close()
 		
 		self.metrics.per_sample_loss(self.plot_save_path, f"test-{self.plot_name}")
 		self.metrics.save(self.csv_save_path, f"test-{self.csv_name}")

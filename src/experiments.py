@@ -2,12 +2,16 @@ import torch
 
 from tester.tester import Tester
 from trainer.trainer import Trainer
+from trainer.ddlg_trainier import DdlgTrainer
 from trainer.deep_aggr_trainer import DeepAggregateTrainer
 from utils.get_dataloader import get_dataloader
 from utils.get_result_plotting import get_result_plotting
 from model.autoencoder import AutoEncoder
 from model.deep_aggr_autoencoder import DeepAggregateAutoEncoder
 from model.ddlg_autoencoder import DdlgAutoencoder
+
+from logger.ddlg_neurons import ddlg_neurons
+
 
 from typing import Dict
 
@@ -45,10 +49,11 @@ class Experiments:
 		tester.test()
 
 	def ddlg_autoencoder(self: "Experiments") -> None:
-		ddlg_ae = DdlgAutoencoder(self.in_features, self.hidden_sizes, 5, self.device)
-		trainer = Trainer(ddlg_ae, self.config, self.device, self.train_data_loader)
-		tester = Tester(ddlg_ae, self.config, self.device, self.train_data_loader, self.result_plotting)
+		ddlg_ae = DdlgAutoencoder(self.in_features, self.hidden_sizes, 2, self.device)
+		trainer = DdlgTrainer(ddlg_ae, self.config, self.device, self.train_data_loader)
+		tester = Tester(ddlg_ae, self.config, self.device, self.test_data_loader, self.result_plotting)
 
 		trainer.train()
+		ddlg_neurons(ddlg_ae)
 		tester.test()
 

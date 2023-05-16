@@ -1,5 +1,5 @@
 import torch
-from fuzzy_logic.Membership import Membership
+from fuzzy_logic.membership import Membership
 
 class HighMembership(Membership):
 	def fuzzification(self: "HighMembership", data: torch.Tensor) -> torch.Tensor:

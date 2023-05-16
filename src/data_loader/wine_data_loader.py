@@ -28,6 +28,30 @@ class _WineQualityDataset(Dataset):
 		if transform:
 			self.data = transform(self.data)
 
+		#self.data = pd.read_csv(file_path, sep=';')
+		#scaler.fit(self.data)
+		#dataset_length = self.data.shape[0]
+
+		#self.data = torch.Tensor(np.array(self.data))
+		#self.data = self.data[torch.randperm(dataset_length)]
+
+		#datasets = torch.split(self.data, int(dataset_length * 0.8))
+		#train_dataset = datasets[0]
+		#test_dataset = datasets[1]
+		
+		#train_dataset = scaler.transform(train_dataset)
+		#test_dataset = scaler.transform(test_dataset)
+		
+		#if transform:
+		#	self.data = torch.stack([t.fuzzification(self.data) for t in transform])
+
+		#if train:
+		#	self.data = train_dataset
+		#else:
+		#	self.data = test_dataset
+		
+		#self.data = torch.Tensor(np.array(self.data))
+
 
 	def __len__(self: "_WineQualityDataset") -> int:
 		return len(self.data)
