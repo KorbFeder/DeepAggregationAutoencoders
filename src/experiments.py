@@ -9,6 +9,8 @@ from utils.get_result_plotting import get_result_plotting
 from model.autoencoder import AutoEncoder
 from model.deep_aggr_autoencoder import DeepAggregateAutoEncoder
 from model.ddlg_autoencoder import DdlgAutoencoder
+from model.edge_autoencoder import EdgeAutoencoder
+from model.edge_powerset_autoencoder import EdgePowersetAutoencoder
 
 from logger.ddlg_neurons import ddlg_neurons
 
@@ -49,11 +51,28 @@ class Experiments:
 		tester.test()
 
 	def ddlg_autoencoder(self: "Experiments") -> None:
-		ddlg_ae = DdlgAutoencoder(self.in_features, self.hidden_sizes, 2, self.device)
+		ddlg_ae = DdlgAutoencoder(self.in_features, self.hidden_sizes, 4, self.device)
 		trainer = DdlgTrainer(ddlg_ae, self.config, self.device, self.train_data_loader)
 		tester = Tester(ddlg_ae, self.config, self.device, self.test_data_loader, self.result_plotting)
 
 		trainer.train()
 		ddlg_neurons(ddlg_ae)
 		tester.test()
+
+	def edge_autoencoder(self: "Experiments") -> None:
+		edge_ae = EdgeAutoencoder(self.in_features, self.hidden_sizes, self.device)
+		trainer = Trainer(edge_ae, self.config, self.device, self.train_data_loader)
+		tester = Tester(edge_ae, self.config, self.device, self.test_data_loader, self.result_plotting)
+
+		trainer.train()
+		tester.test()
+
+	def edge_powerset_autoencoder(self: "Experiments") -> None:
+		edge_ae = EdgePowersetAutoencoder(self.in_features, self.hidden_sizes, self.device)
+		trainer = Trainer(edge_ae, self.config, self.device, self.train_data_loader)
+		tester = Tester(edge_ae, self.config, self.device, self.test_data_loader, self.result_plotting)
+
+		trainer.train()
+		tester.test()
+
 
