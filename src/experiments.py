@@ -4,6 +4,7 @@ from tester.tester import Tester
 from trainer.trainer import Trainer
 from trainer.ddlg_trainier import DdlgTrainer
 from trainer.deep_aggr_trainer import DeepAggregateTrainer
+from trainer.edge_selection_trainer import EdgeSelectionTrainer
 from utils.get_dataloader import get_dataloader
 from utils.get_result_plotting import get_result_plotting
 from model.autoencoder import AutoEncoder
@@ -11,6 +12,7 @@ from model.deep_aggr_autoencoder import DeepAggregateAutoEncoder
 from model.ddlg_autoencoder import DdlgAutoencoder
 from model.edge_autoencoder import EdgeAutoencoder
 from model.edge_powerset_autoencoder import EdgePowersetAutoencoder
+from model.edge_selection_autoencoder import EdgeSelctionAutoencoder
 
 from logger.ddlg_neurons import ddlg_neurons
 
@@ -74,5 +76,14 @@ class Experiments:
 
 		trainer.train()
 		tester.test()
+
+	def edge_selection_autoencoder(self: "Experiments") -> None: 
+		edge_ae = EdgeSelctionAutoencoder(self.in_features, self.hidden_sizes, seed=0)
+		trainer = EdgeSelectionTrainer(edge_ae, self.config, self.train_data_loader)
+		tester = Tester(edge_ae, self.config, torch.device('cpu'), self.test_data_loader, self.result_plotting)
+
+		trainer.train()
+		tester.test()
+
 
 

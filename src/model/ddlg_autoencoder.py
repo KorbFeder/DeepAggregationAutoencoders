@@ -8,8 +8,8 @@ def create_function_table():
 	logic_func: List[Callable[[torch.Tensor], torch.Tensor]] = [
 		fuzzy_min,
 		fuzzy_max,
-		fuzzy_alg,
-		fuzzy_coalg,
+		#fuzzy_alg,
+		#fuzzy_coalg,
 		fuzzy_ein,
 		fuzzy_coein,
 		#fuzzy_luk,

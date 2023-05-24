@@ -31,4 +31,7 @@ if __name__ == "__main__":
 	experiments = Experiments(config)
 	#experiments.default_autoencoder()
 	#experiments.deep_aggr_autoenc()
-	experiments.ddlg_autoencoder()
+	#experiments.ddlg_autoencoder()
+	#experiments.edge_autoencoder()
+	#experiments.edge_powerset_autoencoder()
+	experiments.edge_selection_autoencoder()
