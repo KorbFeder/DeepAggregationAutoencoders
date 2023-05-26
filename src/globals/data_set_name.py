@@ -4,3 +4,4 @@ class DatasetName(Enum):
 	mnist = 'mnist'
 	simple ='simple'
 	wine = 'wine'
+	single = 'single'

@@ -1,12 +1,12 @@
 data: 
   # Batch size either int or null, for example: batch_size: 32 or batch_size: null
-  train_batch_size: 8
-  test_batch_size: 4
+  train_batch_size: 1
+  test_batch_size: 1
   # The dataset to use options are: mnist, wine, or simple for example: dataset: 'mnist'
-  dataset: 'wine'
+  dataset: 'single'
 
 trainer: 
-  epochs: 50
+  epochs: 2
 
 model:
   # The input features as int, will also be the output features example: in_out_features: 784 
