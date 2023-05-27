@@ -13,8 +13,10 @@ from model.ddlg_autoencoder import DdlgAutoencoder
 from model.edge_autoencoder import EdgeAutoencoder
 from model.edge_powerset_autoencoder import EdgePowersetAutoencoder
 from model.edge_selection_autoencoder import EdgeSelctionAutoencoder
+from model.diff_edge_autoencoder import DiffEdgeAutoencoder
 
 from logger.ddlg_neurons import ddlg_neurons
+from logger.diff_edges_visualized import diff_edges_visualized
 
 
 from typing import Dict
@@ -84,6 +86,16 @@ class Experiments:
 
 		trainer.train()
 		tester.test()
+
+	def diff_edge_autoencoder(self: "Experiments") -> None:
+		edge_ae = DiffEdgeAutoencoder(self.in_features, self.hidden_sizes, self.device)
+		trainer = DdlgTrainer(edge_ae, self.config, self.device, self.train_data_loader)
+		tester = Tester(edge_ae, self.config, self.device, self.test_data_loader, self.result_plotting)
+
+		trainer.train()
+		diff_edges_visualized(edge_ae)
+		tester.test()
+
 
 
 
