@@ -9,7 +9,7 @@ from experiments import Experiments
 def parse_args():
 	parser = argparse.ArgumentParser(description="Training")
 
-	parser.add_argument('--config', '-c', default='simple', type=str, 
+	parser.add_argument('--config', '-c', default='single', type=str, 
 		help='Configuration file. Use name without extension and without file path')
 	
 	return parser.parse_args()
@@ -34,4 +34,5 @@ if __name__ == "__main__":
 	#experiments.ddlg_autoencoder()
 	#experiments.edge_autoencoder()
 	#experiments.edge_powerset_autoencoder()
-	experiments.edge_selection_autoencoder()
+	#experiments.edge_selection_autoencoder()
+	experiments.diff_edge_autoencoder()

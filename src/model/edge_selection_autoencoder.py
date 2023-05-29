@@ -17,7 +17,7 @@ class EdgeSelectionLayer(nn.Module):
 		in_features: int,
 		out_features: int,
 		operator: Callable[[torch.Tensor], torch.Tensor],
-		learn_threshold: float = 0.01, 
+		learn_threshold: float = 0.001, 
 		seed: Optional[int] = None
 	) -> None:
 		super().__init__()
