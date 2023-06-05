@@ -52,17 +52,17 @@ class Experiments:
 		label_name = []
 		all_test_metrics = []
 		i = 0
-		name = self.config['path']['plot_name']
+		name = self.config['path']['experiment_name']
 		for experiment in experiments:
-			self.config['path']['plot_name'] = name + str(i)
+			self.config['path']['experiment_name'] = name + str(i)
 			train_metrics, test_metrics = experiment()
 			label_name.append(experiment.__name__)
 			all_train_metrics.append(train_metrics)
 			all_test_metrics.append(test_metrics)
 			i += 1
+		self.config['path']['experiment_name'] = name
+
 		self._compare_experiments_plot(all_train_metrics, label_name)
-		
-		self.config['path']['plot_name'] = name
 
 		for train_metrics, test_metrics, label in zip(all_train_metrics, all_test_metrics, label_name):
 			print_avg_loss(train_metrics, test_metrics, label)
@@ -75,7 +75,7 @@ class Experiments:
 			per_sample_losses.append(metric.per_sample_loss[0])
 			episodic_losses.append(metric.episodic_loss[0])
 
-		name = path_config['plot_name']
+		name = path_config['experiment_name']
 		plot_loss(per_sample_losses, self.image_experiment_dir, f'comparison-per-sample-loss-{name}', legend=label_name)
 		plot_loss(episodic_losses, self.image_experiment_dir, f'comparison-episodic-{name}', legend=label_name)
 	

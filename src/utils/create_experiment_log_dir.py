@@ -7,7 +7,7 @@ from typing import Dict
 
 def create_experiment_log_dir(config: Dict) -> str:
 	# create folder structure 
-	experiment_name = config['path']['plot_name']
+	experiment_name = config['path']['experiment_name']
 	time_stamp = time.time()
 	experiment_dir_name = f'{str(time_stamp)}-{experiment_name}'
 	root_experiment_folder = os.path.join(os.path.abspath(os.curdir), LOG_FOLDER, experiment_dir_name)

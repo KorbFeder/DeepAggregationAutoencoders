@@ -32,8 +32,8 @@ class BaseTester:
 
 		path_config = config['path']
 		dataset = config['data']['dataset']
-		self.csv_name = f"{dataset}-{path_config['csv_name']}"
-		self.plot_name = f"{dataset}-{path_config['plot_name']}"
+		self.csv_name = 'result.csv'
+		self.experiment_name = f"{dataset}-{path_config['experiment_name']}"
 	
 		self.log_dir = os.path.join(log_path, LOG_FOLDER)
 		self.image_dir = os.path.join(log_path, IMAGE_FOLDER)
@@ -60,8 +60,8 @@ class BaseTester:
 				self.metrics.add(1, len(x), [error.cpu().item()])
 		
 		if self.plotting:
-			self.plotting(originals, results, save_path=self.image_dir, name=f"test-{self.plot_name}")
-		output_to_csv(originals, results, self.log_dir, f"reconstruction-test-{self.plot_name}")
+			self.plotting(originals, results, save_path=self.image_dir, name=f"test-{self.experiment_name}")
+		output_to_csv(originals, results, self.log_dir, f"reconstruction-test-{self.experiment_name}")
 
 		if self.tensorboard_graph:
 			writer = SummaryWriter(self.image_dir)
