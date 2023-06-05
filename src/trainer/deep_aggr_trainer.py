@@ -13,8 +13,9 @@ class DeepAggregateTrainer(BaseTrainer):
 		model: nn.Module,
 		config: Dict,
 		data_loader: DataLoader,
+		log_path: str
 	) -> None:
-		super().__init__(model, config, None, None)
+		super().__init__(model, config, None, None, log_path)
 		self.model = model
 		self.data_loader = data_loader
 		self.metrics = Metrics()

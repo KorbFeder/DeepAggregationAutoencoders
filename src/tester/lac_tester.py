@@ -15,9 +15,10 @@ class LacTester(BaseTester):
 		config: Dict,
 		device: torch.device, 
 		data_loader: DataLoader, 
+		log_path: str,
 		plotting: Optional[Callable[[List[torch.Tensor]], None]] = None
 	) -> None:
-		super().__init__(model, config, device, data_loader, plotting)
+		super().__init__(model, config, device, data_loader, log_path, plotting)
 
 	def _test(self: "BaseTester", x: torch.Tensor) -> torch.Tensor:
 		_, x = self.model(x)

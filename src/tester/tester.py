@@ -13,10 +13,11 @@ class Tester(BaseTester):
 		config: Dict,
 		device: torch.device, 
 		data_loader: DataLoader, 
+		log_path: str,
 		plotting: Optional[Callable[[List[torch.Tensor]], None]] = None,
 		tensorboard_grpah: bool = False
 	) -> None:
-		super().__init__(model, config, device, data_loader, plotting, tensorboard_grpah)
+		super().__init__(model, config, device, data_loader, log_path, plotting, tensorboard_grpah)
 
 	def _test(self: "BaseTester", x: torch.Tensor) -> torch.Tensor:
 		x = self.model(x)

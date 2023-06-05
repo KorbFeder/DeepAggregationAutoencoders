@@ -14,9 +14,10 @@ class LacTrainer(BaseTrainer):
 		model: nn.Module, 
 		config: Dict, 
 		device: torch.device,
-		data_loader: DataLoader
+		data_loader: DataLoader, 
+		log_path: str
 	) -> None:
-		super().__init__(model, config, None, None)
+		super().__init__(model, config, None, None, log_path)
 		self.config = config
 		self.device = device
 		self.data_loader = data_loader

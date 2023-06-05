@@ -12,6 +12,7 @@ class BaseTrainer:
 		config: Dict,
 		criterion: nn.Module,
 		optimizer: nn.Module,
+		log_path: str
 	) -> None:
 		self.model = model
 		self.criterion = criterion
@@ -29,17 +30,20 @@ class BaseTrainer:
 		self.plot_save_path = path_config['plot_save_path']
 		self.plot_name = f"{dataset}-{path_config['plot_name']}"
 	
-		self.metrics: Metrics = Metrics()
+		self.metrics: Metrics = Metrics(log_path)
 
 	@abstractmethod
 	def _train_epoch(self: "BaseTrainer", epoch: int):
 		raise NotImplementedError
 
-	def train(self: "BaseTrainer"):
+	def train(self: "BaseTrainer") -> Metrics:
 		for epoch in range(self.start_epoch, self.epochs + 1):
 			print(f"training {epoch}/{self.epochs} ...")
 			self._train_epoch(epoch)
 
-			self.metrics.save(self.csv_save_path, f"train-{self.csv_name}")
-			self.metrics.plot_loss(self.plot_save_path, f'train-{self.plot_name}')
+			self.metrics.save(f"train-{self.csv_name}")
+			self.metrics.plot_loss(f'train-{self.plot_name}')
+			self.metrics.print_last()
+
+		return self.metrics
 

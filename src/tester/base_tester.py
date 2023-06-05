@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import os
 import torch
 import torch.nn as nn
 from tqdm import tqdm
@@ -8,6 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from typing import Callable, List, Optional, Dict
 
 from utils.metrics import Metrics
+from globals.folder_names import LOG_FOLDER, IMAGE_FOLDER
 from logger.output_to_csv import output_to_csv
 
 class BaseTester:
@@ -17,6 +19,7 @@ class BaseTester:
 		config: Dict,
 		device: torch.device,
 		data_loader: DataLoader,
+		log_path: str,
 		plotting: Optional[Callable[[List[torch.Tensor], List[torch.Tensor]], None]] = None,
 		tensorboard_grpah: bool = False
 	) -> None:
@@ -29,18 +32,18 @@ class BaseTester:
 
 		path_config = config['path']
 		dataset = config['data']['dataset']
-		self.csv_save_path = path_config['csv_save_path']
 		self.csv_name = f"{dataset}-{path_config['csv_name']}"
-		self.plot_save_path = path_config['plot_save_path']
 		self.plot_name = f"{dataset}-{path_config['plot_name']}"
 	
-		self.metrics: Metrics = Metrics()
+		self.log_dir = os.path.join(log_path, LOG_FOLDER)
+		self.image_dir = os.path.join(log_path, IMAGE_FOLDER)
+		self.metrics: Metrics = Metrics(log_path)
 
 	@abstractmethod
 	def _test(self: "BaseTester", x: torch.Tensor) -> torch.Tensor:
 		raise NotImplementedError
 
-	def test(self: "BaseTester"):
+	def test(self: "BaseTester") -> Metrics:
 		print('started testing on test dataset ...')
 		results = []
 		originals = []
@@ -57,17 +60,17 @@ class BaseTester:
 				self.metrics.add(1, len(x), [error.cpu().item()])
 		
 		if self.plotting:
-			self.plotting(originals, results, save_path=self.plot_save_path, name=f"test-{self.plot_name}")
-		output_to_csv(originals, results, self.csv_save_path, f"test-{self.plot_name}")
+			self.plotting(originals, results, save_path=self.image_dir, name=f"test-{self.plot_name}")
+		output_to_csv(originals, results, self.log_dir, f"reconstruction-test-{self.plot_name}")
 
 		if self.tensorboard_graph:
-			writer = SummaryWriter(self.plot_save_path)
+			writer = SummaryWriter(self.image_dir)
 			a = next(iter(self.data_loader))
 			writer.add_graph(self.model, a[0])
 			writer.close()
 		
-		self.metrics.per_sample_loss(self.plot_save_path, f"test-{self.plot_name}")
-		self.metrics.save(self.csv_save_path, f"test-{self.csv_name}")
+		self.metrics.save(f"test-{self.csv_name}")
+		return self.metrics
 
 			
 

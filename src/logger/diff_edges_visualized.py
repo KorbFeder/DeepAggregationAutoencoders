@@ -46,7 +46,7 @@ def _print_table(table_data: List[List[Dict]]) -> None:
 		probs+= [' '] * (max_len - len(probs))
 
 
-		row_format = ' '.join(['{: >30}' for _ in range(max_len)])
+		row_format = ' '.join(['{: >70}' for _ in range(max_len)])
 		print(row_format.format(*operators))
 		print(row_format.format(*connections))
 		print(row_format.format(*probs))

@@ -6,10 +6,10 @@ from functools import partial
 from typing import List, Callable, Optional
 
 class EdgeType(Enum):
-	no_edge = partial(lambda x: torch.zeros(x.shape))
-	normal_edge = partial(lambda x: x)
-	#very = partial(lambda x: torch.square(x))
-	#somewhat = partial(lambda x: torch.sqrt(x + 1.e-8))
+	no_edge = partial(lambda x, op = torch.min: torch.ones(x.shape) if op == torch.min else torch.zeros(x.shape))
+	normal_edge = partial(lambda x, _: x)
+	very = partial(lambda x, _: torch.square(x))
+	somewhat = partial(lambda x, _: torch.sqrt(x + 1.e-8))
 
 class DiffEdgeLayer(nn.Module):
 	def __init__(
@@ -45,7 +45,7 @@ class DiffEdgeLayer(nn.Module):
 		# calculate the probabilty times the value of the edge for each edge type
 		for i, edge_type in enumerate(self.edge_types):
 			edge_prob = prob[..., i]
-			edge_value = edge_type(x).to(self.device)
+			edge_value = edge_type(x, self.operator).to(self.device)
 
 			multiplication_result = edge_value[:, None] *  edge_prob
 			edge_type_values[i] = multiplication_result

@@ -15,9 +15,10 @@ class DdlgTrainer(BaseTrainer):
 		config: Dict,
 		device: torch.device,
 		data_loader: DataLoader, 
+		log_path: str,
 		error = nn.MSELoss(),
 	) -> None:
-		super().__init__(model, config, None, None)
+		super().__init__(model, config, None, None, log_path)
 		self.error = error
 		self.data_loader = data_loader
 		self.device = device
