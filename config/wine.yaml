@@ -6,7 +6,7 @@ data:
   dataset: 'wine'
 
 trainer: 
-  epochs: 100
+  epochs: 8
 
 model:
   # The input features as int, will also be the output features example: in_out_features: 784 
@@ -18,3 +18,5 @@ model:
 
 path: 
   experiment_name: 'autoencoder'
+  # CRITICAL = 50, ERROR = 40, WARNING = 30, INFO = 20, DEBUG = 10, NOTSET = 0, for example logger_level: 20
+  logger_level: 20

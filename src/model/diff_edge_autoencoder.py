@@ -2,14 +2,17 @@ import torch
 import torch.nn as nn
 from enum import Enum
 from functools import partial
+from fuzzy_logic.fuzzy_operators import fuzzy_alg, fuzzy_coalg
 
 from typing import List, Callable, Optional
 
 class EdgeType(Enum):
-	no_edge = partial(lambda x, op = torch.min: torch.ones(x.shape) if op == torch.min else torch.zeros(x.shape))
+	#no_edge = partial(lambda x, op = torch.min: torch.ones(x.shape) if op == torch.min else torch.zeros(x.shape))
+	no_edge = partial(lambda x, op = fuzzy_alg: torch.zeros(x.shape) if op == fuzzy_alg else torch.zeros(x.shape))
 	normal_edge = partial(lambda x, _: x)
-	very = partial(lambda x, _: torch.square(x))
-	somewhat = partial(lambda x, _: torch.sqrt(x + 1.e-8))
+	#very = partial(lambda x, _: torch.square(x))
+	#somewhat = partial(lambda x, _: torch.sqrt(x + 1.e-8))
+	#Not = partial(lambda x, _: 1 - x)
 
 class DiffEdgeLayer(nn.Module):
 	def __init__(
@@ -51,7 +54,7 @@ class DiffEdgeLayer(nn.Module):
 			edge_type_values[i] = multiplication_result
 
 		expected_value = torch.sum(edge_type_values, dim=0)
-		return self.operator(expected_value, dim=-1).values
+		return self.operator(expected_value, dim=-1)
 			
 class DiffEdgeAutoencoder(nn.Module):
 	def __init__(
@@ -59,13 +62,15 @@ class DiffEdgeAutoencoder(nn.Module):
 		in_features: int,
 		hidden_sizes: List[int],
 		device: torch.device,
+		operators: List[Callable[[torch.Tensor], torch.Tensor]] = [fuzzy_alg, fuzzy_coalg],
 		seed: Optional[int] = None
 	) -> None:
 		super().__init__()
 		self.device = device
 		self.in_features = in_features
 		layer_sizes = [in_features, *hidden_sizes, in_features]
-		self.operators = [torch.min if i % 2 ==  0 else torch.max for i in range(len(layer_sizes) - 1)]
+		self.operators = (operators * int((len(layer_sizes) / len(operators)) + 1))[:len(layer_sizes)]
+		#self.operators = [torch.min if i % 2 ==  0 else torch.max for i in range(len(layer_sizes) - 1)]
 		self.layers = []
 
 		for i in range(len(layer_sizes)-1):
@@ -78,4 +83,5 @@ class DiffEdgeAutoencoder(nn.Module):
 		#is_train = True
 		for layer in self.layers:
 			x = layer(x, is_train)
+			x = x.to(self.device)
 		return x

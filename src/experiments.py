@@ -6,6 +6,7 @@ from trainer.trainer import Trainer
 from trainer.ddlg_trainier import DdlgTrainer
 from trainer.deep_aggr_trainer import DeepAggregateTrainer
 from trainer.edge_selection_trainer import EdgeSelectionTrainer
+from trainer.diff_edge_node_trainer import DiffEdgeTrainer
 from utils.get_dataloader import get_dataloader
 from utils.get_result_plotting import get_result_plotting
 from model.autoencoder import AutoEncoder
@@ -15,6 +16,8 @@ from model.edge_autoencoder import EdgeAutoencoder
 from model.edge_powerset_autoencoder import EdgePowersetAutoencoder
 from model.edge_selection_autoencoder import EdgeSelctionAutoencoder
 from model.diff_edge_autoencoder import DiffEdgeAutoencoder
+from model.diff_edge_node_ae import DiffEdgeNodeAutoencoder, TrainMode
+from model.owa_autoencoder import OwaAutoencoder
 
 from logger.ddlg_neurons import ddlg_neurons
 from logger.plot_loss import plot_loss
@@ -22,6 +25,7 @@ from logger.diff_edges_visualized import diff_edges_visualized
 from logger.print_avg_loss import print_avg_loss
 from utils.metrics import Metrics
 from utils.create_experiment_log_dir import create_experiment_log_dir
+from utils.configure_logger import configure_logger
 from globals.folder_names import LOG_FOLDER, IMAGE_FOLDER
 
 from typing import Dict, List, Tuple, Callable, Optional
@@ -46,20 +50,23 @@ class Experiments:
 		self.experiment_dir: str = create_experiment_log_dir(config)
 		self.log_experiment_dir: str = os.path.join(self.experiment_dir, LOG_FOLDER)
 		self.image_experiment_dir: str = os.path.join(self.experiment_dir, IMAGE_FOLDER)
+		configure_logger(config['path']['logger_level'], os.path.join(self.log_experiment_dir, 'logging.log'))
 	
-	def compare_experiments(self: "Experiments", experiments: List[Callable[[], Tuple[Metrics, Metrics]]]) -> None:
+	def compare_experiments(self: "Experiments", experiments: List[Callable[[], Tuple[Metrics, Metrics]]], arguments = None) -> None:
 		all_train_metrics = []
 		label_name = []
 		all_test_metrics = []
-		i = 0
 		name = self.config['path']['experiment_name']
-		for experiment in experiments:
+	
+		for i, experiment in enumerate(experiments):
 			self.config['path']['experiment_name'] = name + str(i)
-			train_metrics, test_metrics = experiment()
+			if arguments:
+				train_metrics, test_metrics = experiment(arguments[i])
+			else:
+				train_metrics, test_metrics = experiment()
 			label_name.append(experiment.__name__)
 			all_train_metrics.append(train_metrics)
 			all_test_metrics.append(test_metrics)
-			i += 1
 		self.config['path']['experiment_name'] = name
 
 		self._compare_experiments_plot(all_train_metrics, label_name)
@@ -131,6 +138,37 @@ class Experiments:
 		train_metrcis = trainer.train()
 		diff_edges_visualized(edge_ae)
 		return train_metrcis, tester.test()
+
+	def owa_autoencoder(self: "Experiments")-> Tuple[Metrics, Metrics]:
+		ae = OwaAutoencoder(self.in_features, self.hidden_sizes, self.device)
+		trainer = Trainer(ae, self.config, self.device, self.train_data_loader, self.experiment_dir)
+		tester = Tester(ae, self.config, self.device, self.test_data_loader, self.experiment_dir, self.result_plotting)
+
+		train_metrcis = trainer.train()
+		return train_metrcis, tester.test()
+
+	def diff_edge_node_ae(self: "Experiments", train_modes = [TrainMode.train_nodes, TrainMode.train_edges]):
+		edge_ae = DiffEdgeNodeAutoencoder(self.in_features, self.hidden_sizes, self.device)
+		tester = Tester(edge_ae, self.config, self.device, self.test_data_loader, self.experiment_dir, self.result_plotting)
+
+		name = self.config['path']['experiment_name']
+		all_train_metrics = []
+		all_test_metrics = []
+		for train_mode in train_modes:
+			self.config['path']['experiment_name'] = name + "-" + train_mode.name
+			trainer = DiffEdgeTrainer(edge_ae, self.config, self.device, self.train_data_loader, self.experiment_dir, train_mode)
+			train_metrics = trainer.train()
+			test_metrics = tester.test()
+			all_train_metrics.append(train_metrics)
+			all_test_metrics.append(test_metrics)
+
+		self.config['path']['experiment_name'] = name
+
+		diff_edges_visualized(edge_ae)
+
+		for train, test in zip(all_train_metrics, all_test_metrics):
+			print_avg_loss(train, test, 'diff-edge-node-ae')
+		return train_metrics, test_metrics
 
 
 

@@ -58,6 +58,8 @@ class BaseTester:
 				results.append(result.cpu())
 				originals.append(x.cpu())
 				self.metrics.add(1, len(x), [error.cpu().item()])
+
+		self.metrics.print_last()
 		
 		if self.plotting:
 			self.plotting(originals, results, save_path=self.image_dir, name=f"test-{self.experiment_name}")

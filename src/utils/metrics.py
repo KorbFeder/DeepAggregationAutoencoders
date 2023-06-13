@@ -4,6 +4,7 @@ import os
 from itertools import groupby
 from statistics import mean
 from time import time
+import logging
 
 from typing import TypedDict, List
 
@@ -33,6 +34,7 @@ class Metrics:
 		elapsed_time = curr_time - self.first_time
 		self.total_num_of_samples += processed_samples
 		self.curr_iteration += 1
+
 
 		self.metrics.append({
 			'loss': loss,
@@ -69,10 +71,12 @@ class Metrics:
 		return self.metrics[-1]['time_elapsed']
 
 	def print_last(self: "Metrics") -> None:
-		print(json.dumps(self.metrics[-1], indent=2, sort_keys=True))
+		avg_loss = self.episodic_loss
+		logging.info(json.dumps(self.metrics[-1], indent=2, sort_keys=True))
+		logging.info(f'Average episodic loss: {[loss[-1] for loss in avg_loss]}')
 	
 	def print_avg_loss(self: "Metrics"):
-		print(f'\t{[mean(loss) for loss in self.per_sample_loss]}')
+		logging.info(f'\t{[mean(loss) for loss in self.per_sample_loss]}')
 
 	def plot_loss(self: "Metrics", name: str = 'train') -> None:
 		self.plot_episodic_loss(name)
