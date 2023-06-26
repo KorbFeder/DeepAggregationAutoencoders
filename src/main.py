@@ -4,6 +4,7 @@ import yaml
 import argparse
 import logging
 from globals.folder_names import LOG_FOLDER
+from model.diff_edge_node_ae import TrainMode, T_Conorm, T_Norm, EdgeType
 
 from experiments import Experiments
 
@@ -34,13 +35,21 @@ if __name__ == "__main__":
 		device = torch.device('cpu')
 
 	experiments = Experiments(config)
-	#experiments.default_autoencoder()
+	experiments.default_autoencoder()
 	#experiments.deep_aggr_autoenc()
 	#experiments.ddlg_autoencoder()
 	#experiments.edge_autoencoder()
 	#experiments.edge_powerset_autoencoder()
 	#experiments.edge_selection_autoencoder()
 	#experiments.diff_edge_autoencoder()
-	experiments.diff_edge_node_ae()
+	#experiments.diff_edge_node_ae()
 	#experiments.owa_autoencoder()
-	#experiments.compare_experiments([experiments.default_autoencoder, experiments.diff_edge_autoencoder, experiments.diff_edge_node_ae])
+	#experiments.diff_sample_ae()
+	#experiments.edge_counting()
+	#args = [
+	#	[[TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], False],
+##		[[TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], True],
+##		[[TrainMode.train_nodes, TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], False],
+##		[[TrainMode.train_nodes, TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], True]
+	#]
+	#experiments.compare_experiments([experiments.default_autoencoder ,experiments.edge_counting])

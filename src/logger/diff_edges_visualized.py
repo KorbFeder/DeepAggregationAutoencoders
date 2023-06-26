@@ -26,9 +26,9 @@ def diff_edges_visualized(model: DiffEdgeAutoencoder, use_edge_name: bool = Fals
 			node_type_indices = torch.nn.functional.one_hot(layer.prob_node_weights.argmax(-1), len(layer.operators))
 			node_probs = nn.functional.softmax(layer.prob_node_weights, dim=-1)
 			nodes = node_type_indices.argmax(dim=1).tolist()
-			operator = [layer.operators[index].__name__ for index in nodes]
+			operator = [layer.operators[index].name for index in nodes]
 		else: 
-			operator = layer.operator.__name__
+			operator = layer.operator.name
 	
 		i = 0
 		for edge_indices, prob in zip(edge_type_indices, probs):

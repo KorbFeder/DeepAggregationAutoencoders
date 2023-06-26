@@ -3,19 +3,12 @@ import torch.nn as nn
 from enum import Enum
 from functools import partial
 from fuzzy_logic.fuzzy_operators import T_Norm, T_Conorm
+from fuzzy_logic.edge_types import EdgeType
 
 from typing import List, Callable, Optional, Tuple, Union
 
-NO_EDGE_OFFSET_T_NORM = 100
-NO_EDGE_OFFSET_T_CONORM = 100
-
-class EdgeType(Enum):
-	no_edge = partial(lambda x: torch.zeros(x.shape))
-	#no_edge = partial(lambda x, op = torch.min: torch.zeros(x.shape) + 5 if op == torch.min else torch.zeros(x.shape) - 5)
-	normal_edge = partial(lambda x: x)
-	very = partial(lambda x: torch.square(x))
-	somewhat = partial(lambda x: torch.sqrt(x + 1.e-8))
-	Not = partial(lambda x: 1 - x)
+NO_EDGE_OFFSET_T_NORM = 1
+NO_EDGE_OFFSET_T_CONORM = -1
 
 class TrainMode(Enum):
 	no_train = 0
@@ -38,8 +31,6 @@ class DiffEdgeNodeLayer(nn.Module):
 		if seed != None:
 			torch.manual_seed(seed)
 		
-		self.edge_types: List[Callable[[torch.Tensor], torch.Tensor]] = [etype.value for etype in EdgeType]
-
 		self.device = device
 		self.operators: List[Callable[[torch.Tensor], torch.Tensor]] = operators
 		self.edge_types = edge_types
@@ -99,7 +90,7 @@ class DiffEdgeNodeLayer(nn.Module):
 		if operator.value in set(item.value for item in T_Norm):
 			return NO_EDGE_OFFSET_T_NORM
 		if operator.value in set(item.value for item in T_Conorm):
-			return -NO_EDGE_OFFSET_T_CONORM
+			return NO_EDGE_OFFSET_T_CONORM
 
 			
 class DiffEdgeNodeAutoencoder(nn.Module):
@@ -108,8 +99,9 @@ class DiffEdgeNodeAutoencoder(nn.Module):
 		in_features: int,
 		hidden_sizes: List[int],
 		device: torch.device,
-		operators: List[Union[T_Norm, T_Conorm]] = [T_Norm.min, T_Conorm.max, T_Norm.alg, T_Conorm.alg],
-		edge_types: List[EdgeType] = [EdgeType.no_edge, EdgeType.normal_edge, EdgeType.very, EdgeType.somewhat, EdgeType.Not],
+		operators: List[Union[T_Norm, T_Conorm]] = [T_Norm.min, T_Conorm.max],
+		edge_types: List[EdgeType] = [EdgeType.no_edge, EdgeType.normal_edge], #, EdgeType.very, EdgeType.somewhat, EdgeType.Not],
+		use_weights_after_train: bool = False,
 		seed: Optional[int] = None
 	) -> None:
 		super().__init__()
@@ -117,6 +109,9 @@ class DiffEdgeNodeAutoencoder(nn.Module):
 		self.in_features = in_features
 		layer_sizes = [in_features, *hidden_sizes, in_features]
 		self.layers = []
+		self.use_weights_after_train = use_weights_after_train
+		self.saved_train_mode = TrainMode.no_train
+		self.edge_types = edge_types
 
 		for i in range(len(layer_sizes)-1):
 			self.layers += [DiffEdgeNodeLayer(layer_sizes[i], layer_sizes[i + 1], operators, edge_types, device, seed)]
@@ -125,6 +120,12 @@ class DiffEdgeNodeAutoencoder(nn.Module):
 	
 	def forward(self: "DiffEdgeNodeAutoencoder", x: torch.Tensor,train_mode: TrainMode = TrainMode.no_train) -> torch.Tensor:
 		x = x.to(self.device)
+
+		if self.use_weights_after_train:
+			if train_mode != TrainMode.no_train:
+				self.saved_train_mode = train_mode
+			train_mode = self.saved_train_mode
+
 		for layer in self.layers:
 			x = layer(x, train_mode)
 		return x
