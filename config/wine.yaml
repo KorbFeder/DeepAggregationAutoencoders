@@ -6,13 +6,13 @@ data:
   dataset: 'wine'
 
 trainer: 
-  epochs: 8
+  epochs: 50
 
 model:
   # The input features as int, will also be the output features example: in_out_features: 784 
   in_out_features: 12
   # The hidden sizes of the layers between input and ouput for example: hidden_sizes: [512, 256, 512]
-  hidden_sizes: [24, 18, 12, 8, 12, 18, 24]
+  hidden_sizes: [10, 8, 6, 8, 10]
   # Options are: 'cuda', 'cpu'
   device: 'cuda'
 

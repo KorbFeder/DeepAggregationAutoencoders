@@ -12,7 +12,7 @@ model:
   # The input features as int, will also be the output features example: in_out_features: 784 
   in_out_features: 4
   # The hidden sizes of the layers between input and ouput for example: hidden_sizes: [512, 256, 512]
-  hidden_sizes: [3]
+  hidden_sizes: [2]
   # Options are: 'cuda', 'cpu'
   device: 'cuda'
 

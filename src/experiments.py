@@ -16,13 +16,16 @@ from model.edge_autoencoder import EdgeAutoencoder
 from model.edge_powerset_autoencoder import EdgePowersetAutoencoder
 from model.edge_selection_autoencoder import EdgeSelctionAutoencoder
 from model.diff_edge_autoencoder import DiffEdgeAutoencoder
-from model.diff_edge_node_ae import DiffEdgeNodeAutoencoder, TrainMode
+from model.diff_edge_node_ae import DiffEdgeNodeAutoencoder, TrainMode, T_Conorm, T_Norm, EdgeType
 from model.owa_autoencoder import OwaAutoencoder
+from model.diff_sample_ae import DiffSampleAutoencoder
+from model.edge_counting_efficient import EdgeCountingAutoencoder
 
 from logger.ddlg_neurons import ddlg_neurons
 from logger.plot_loss import plot_loss
 from logger.diff_edges_visualized import diff_edges_visualized
 from logger.print_avg_loss import print_avg_loss
+from logger.edge_counts import print_edge_counts
 from utils.metrics import Metrics
 from utils.create_experiment_log_dir import create_experiment_log_dir
 from utils.configure_logger import configure_logger
@@ -61,7 +64,10 @@ class Experiments:
 		for i, experiment in enumerate(experiments):
 			self.config['path']['experiment_name'] = name + str(i)
 			if arguments:
-				train_metrics, test_metrics = experiment(arguments[i])
+				if arguments[i] == None:
+					train_metrics, test_metrics = experiment()
+				else:
+					train_metrics, test_metrics = experiment(*(arguments[i]))
 			else:
 				train_metrics, test_metrics = experiment()
 			label_name.append(experiment.__name__)
@@ -91,7 +97,12 @@ class Experiments:
 		trainer = Trainer(autoencoder, self.config, self.device, self.train_data_loader, self.experiment_dir)
 		tester = Tester(autoencoder, self.config, self.device, self.test_data_loader, self.experiment_dir, self.result_plotting)
 
-		return trainer.train(), tester.test()
+		train = trainer.train()
+		test = tester.test()
+
+		print_avg_loss(train, test, 'default autoencoder')
+
+		return train, test
 	
 	def deep_aggr_autoenc(self: "Experiments") -> Tuple[Metrics, Metrics]:
 		deep_aggr_ae = DeepAggregateAutoEncoder(self.in_features, self.hidden_sizes, [8, 8, 8, 8])
@@ -147,8 +158,10 @@ class Experiments:
 		train_metrcis = trainer.train()
 		return train_metrcis, tester.test()
 
-	def diff_edge_node_ae(self: "Experiments", train_modes = [TrainMode.train_nodes, TrainMode.train_edges]):
-		edge_ae = DiffEdgeNodeAutoencoder(self.in_features, self.hidden_sizes, self.device)
+	def diff_edge_node_ae(self: "Experiments", train_modes = [TrainMode.train_edges], operators = [T_Norm.min, T_Conorm.max], 
+		       edge_types = [EdgeType.no_edge, EdgeType.normal_edge], use_weights = False) -> Tuple[Metrics, Metrics]:
+
+		edge_ae = DiffEdgeNodeAutoencoder(self.in_features, self.hidden_sizes, self.device, operators, edge_types, use_weights)
 		tester = Tester(edge_ae, self.config, self.device, self.test_data_loader, self.experiment_dir, self.result_plotting)
 
 		name = self.config['path']['experiment_name']
@@ -169,6 +182,25 @@ class Experiments:
 		for train, test in zip(all_train_metrics, all_test_metrics):
 			print_avg_loss(train, test, 'diff-edge-node-ae')
 		return train_metrics, test_metrics
+	
+	def diff_sample_ae(self: "Experiments"):
+		autoencoder = DiffSampleAutoencoder(self.in_features, self.hidden_sizes, self.device)
+		trainer = Trainer(autoencoder, self.config, self.device, self.train_data_loader, self.experiment_dir)
+		tester = Tester(autoencoder, self.config, self.device, self.test_data_loader, self.experiment_dir, self.result_plotting)
+
+		return trainer.train(), tester.test()
+
+	def edge_counting(self: "Experiments"):
+		autoencoder = EdgeCountingAutoencoder(self.in_features, self.hidden_sizes, self.device)
+		trainer = EdgeSelectionTrainer(autoencoder, self.config, self.train_data_loader, self.experiment_dir, self.device)
+		tester = Tester(autoencoder, self.config, self.device, self.test_data_loader, self.experiment_dir, self.result_plotting)
+
+		train = trainer.train()
+		print_edge_counts(autoencoder)
+		return train, tester.test()
+	
+
+
 
 
 
