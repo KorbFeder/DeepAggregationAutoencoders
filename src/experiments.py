@@ -19,13 +19,17 @@ from model.diff_edge_autoencoder import DiffEdgeAutoencoder
 from model.diff_edge_node_ae import DiffEdgeNodeAutoencoder, TrainMode, T_Conorm, T_Norm, EdgeType
 from model.owa_autoencoder import OwaAutoencoder
 from model.diff_sample_ae import DiffSampleAutoencoder
-from model.edge_counting_efficient import EdgeCountingAutoencoder
+from model.edge_counting import EdgeCountingAutoencoder
+from model.node_counting import NodeCountingAutoencoder
+from model.forward_forward_counting import ForwardForwardCoutingAutoencoder
 
 from logger.ddlg_neurons import ddlg_neurons
 from logger.plot_loss import plot_loss
 from logger.diff_edges_visualized import diff_edges_visualized
 from logger.print_avg_loss import print_avg_loss
 from logger.edge_counts import print_edge_counts
+from logger.node_counts import print_node_counts
+from logger.print_operators import print_operators
 from utils.metrics import Metrics
 from utils.create_experiment_log_dir import create_experiment_log_dir
 from utils.configure_logger import configure_logger
@@ -199,9 +203,21 @@ class Experiments:
 		print_edge_counts(autoencoder)
 		return train, tester.test()
 	
+	def node_counting(self: "Experiments"):
+		autoencoder = NodeCountingAutoencoder(self.in_features, self.hidden_sizes, self.device)
+		trainer = EdgeSelectionTrainer(autoencoder, self.config, self.train_data_loader, self.experiment_dir, self.device)
+		tester = Tester(autoencoder, self.config, self.device, self.test_data_loader, self.experiment_dir, self.result_plotting)
 
+		train = trainer.train()
+		print_node_counts(autoencoder)
+		return train, tester.test()
+	
+	def forward_forward_counting(self: "Experiments"):
+		autoencoder = ForwardForwardCoutingAutoencoder(self.in_features, self.hidden_sizes, self.device, seed=0)
+		trainer = EdgeSelectionTrainer(autoencoder, self.config, self.train_data_loader, self.experiment_dir, self.device)
+		tester = Tester(autoencoder, self.config, self.device, self.test_data_loader, self.experiment_dir, self.result_plotting)
 
-
-
-
-
+		train = trainer.train()
+		print_operators(autoencoder)
+		print_edge_counts(autoencoder)
+		return train, tester.test()

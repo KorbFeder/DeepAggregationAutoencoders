@@ -11,7 +11,7 @@ from experiments import Experiments
 def parse_args():
 	parser = argparse.ArgumentParser(description="Training")
 
-	parser.add_argument('--config', '-c', default='wine', type=str, 
+	parser.add_argument('--config', '-c', default='single', type=str, 
 		help='Configuration file. Use name without extension and without file path')
 	
 	return parser.parse_args()
@@ -20,8 +20,6 @@ def get_config_path(args) -> str:
 	config_path = './config'
 	path = os.path.join(config_path, args.config + '.yaml')
 	return path
-
-
 	
 if __name__ == "__main__":
 	args = parse_args()
@@ -35,7 +33,7 @@ if __name__ == "__main__":
 		device = torch.device('cpu')
 
 	experiments = Experiments(config)
-	experiments.default_autoencoder()
+	#experiments.default_autoencoder()
 	#experiments.deep_aggr_autoenc()
 	#experiments.ddlg_autoencoder()
 	#experiments.edge_autoencoder()
@@ -46,10 +44,11 @@ if __name__ == "__main__":
 	#experiments.owa_autoencoder()
 	#experiments.diff_sample_ae()
 	#experiments.edge_counting()
+	experiments.forward_forward_counting()
 	#args = [
 	#	[[TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], False],
 ##		[[TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], True],
 ##		[[TrainMode.train_nodes, TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], False],
 ##		[[TrainMode.train_nodes, TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], True]
 	#]
-	#experiments.compare_experiments([experiments.default_autoencoder ,experiments.edge_counting])
+	#experiments.compare_experiments([experiments.default_autoencoder ,experiments.edge_counting, experiments.forward_forward_counting])

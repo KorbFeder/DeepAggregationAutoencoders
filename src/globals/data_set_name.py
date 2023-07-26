@@ -5,3 +5,7 @@ class DatasetName(Enum):
 	simple ='simple'
 	wine = 'wine'
 	single = 'single'
+	autos = 'autos'
+	flag = 'flag'
+	iris = 'iris'
+	sonar = 'sonar'

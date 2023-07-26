@@ -11,6 +11,7 @@ class _SingleDataset(Dataset):
 			#[(i / 10) % 1 for i in range(length)]
 			#[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0, 0.1, 0.2],
 			[0.1, 0.2, 0.7, 0.8],
+			[0.9, 0.2, 0.1, 0.7],
 		], dtype=np.float32)
 
 		self.train_data = np.array(self.data)

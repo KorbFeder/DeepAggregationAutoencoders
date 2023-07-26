@@ -6,16 +6,9 @@ from fuzzy_logic.edge_types import EdgeType
 from fuzzy_logic.fuzzy_operators import T_Conorm, T_Norm
 
 from typing import List, Union, Optional
-from dataclasses import dataclass
 
 NO_EDGE_OFFSET_T_NORM = 1
 NO_EDGE_OFFSET_T_CONORM = 0
-
-@dataclass
-class BackprobValue:
-	prev_node_index: int
-	value: float
-
 
 class EdgeCountingLayer(nn.Module):
 	def __init__(

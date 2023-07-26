@@ -6,7 +6,7 @@ data:
   dataset: 'simple'
 
 trainer: 
-  epochs: 50
+  epochs: 2
 
 model:
   # The input features as int, will also be the output features example: in_out_features: 784 

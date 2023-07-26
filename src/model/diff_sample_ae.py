@@ -2,22 +2,26 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from fuzzy_logic.fuzzy_operators import T_Norm, T_Conorm
-import random
 from functools import partial
 from enum import Enum
 
-from typing import List, Callable, Union
+from fuzzy_logic.edge_types import EdgeType
+
+from typing import List, Union
 
 NO_EDGE_OFFSET_T_NORM = 1
 NO_EDGE_OFFSET_T_CONORM = 0
 
-class EdgeType(Enum):
-	no_edge = partial(lambda x: torch.zeros(x.shape))
-	#no_edge = partial(lambda x, op = torch.min: torch.zeros(x.shape) + 5 if op == torch.min else torch.zeros(x.shape) - 5)
-	normal_edge = partial(lambda x: x)
-	very = partial(lambda x: torch.square(x))
-	somewhat = partial(lambda x: torch.sqrt(x + 1.e-8))
-	Not = partial(lambda x: 1 - x)
+class DiffMin(torch.autograd.Function):
+	@staticmethod
+	def forward(ctx, input):
+		ctx.save_for_backward(input)
+		return T_Norm.min(input)
+
+	@staticmethod
+	def backward(ctx, input):
+		input, = ctx.saved_tensors
+
 
 class DiffSampleLayer(nn.Module):
 	def __init__(
