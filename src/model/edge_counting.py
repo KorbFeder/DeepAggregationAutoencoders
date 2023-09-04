@@ -7,8 +7,8 @@ from fuzzy_logic.fuzzy_operators import T_Conorm, T_Norm
 
 from typing import List, Union, Optional
 
-NO_EDGE_OFFSET_T_NORM = 1
-NO_EDGE_OFFSET_T_CONORM = 0
+NO_EDGE_OFFSET_T_NORM = 2
+NO_EDGE_OFFSET_T_CONORM = -1
 
 class EdgeCountingLayer(nn.Module):
 	def __init__(
@@ -71,7 +71,9 @@ class EdgeCountingAutoencoder(nn.Module):
 		self.loss_func = loss_func
 		self.layers: List[EdgeCountingLayer] = []
 		layer_sizes = [in_features, *hidden_sizes, in_features]
+		self.layer_sizes = layer_sizes
 		self.operators = (operators * int((len(layer_sizes) / len(operators)) + 1))[:len(layer_sizes)]
+		self.edge_types = edge_types
 
 		for i in range(len(layer_sizes)-1):
 			self.layers += [EdgeCountingLayer(layer_sizes[i], layer_sizes[i + 1], self.operators[i], edge_types, device, seed)]

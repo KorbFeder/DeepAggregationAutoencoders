@@ -9,8 +9,8 @@ from fuzzy_logic.edge_types import EdgeType
 
 from typing import List, Union
 
-NO_EDGE_OFFSET_T_NORM = 1
-NO_EDGE_OFFSET_T_CONORM = 0
+NO_EDGE_OFFSET_T_NORM = 2
+NO_EDGE_OFFSET_T_CONORM = -1
 
 class DiffMin(torch.autograd.Function):
 	@staticmethod

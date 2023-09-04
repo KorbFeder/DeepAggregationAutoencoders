@@ -16,19 +16,19 @@ class _SimpleDataset(Dataset):
 			[0.1, 0.7, 0, 0.7, 0.2], 
 			[0.1, 0.2, 0.5, 0, 0.2],
 			[0.1, 0.1, 0.1, 0.8, 0.3], 
-			[0.6, 0, 0, 0, 0],
-			[0.6, 0, 0, 0.4, 0], 
-			[0.6, 0, 0.5, 0, 0],
-			[0.6, 0, 0.3, 0.3, 0], 
-			[0.6, 0.8, 0, 0, 0],
-			[0.6, 0.9, 0, 1, 0], 
-			[0.6, 1, 0.5, 0, 0],
-			[0.6, 1, 0.6, 0.7, 0], 
+			#[0.6, 0, 0, 0, 0],
+			#[0.6, 0, 0, 0.4, 0], 
+			#[0.6, 0, 0.5, 0, 0],
+			#[0.6, 0, 0.3, 0.3, 0], 
+			#[0.6, 0.8, 0, 0, 0],
+			#[0.6, 0.9, 0, 1, 0], 
+			#[0.6, 1, 0.5, 0, 0],
+			#[0.6, 1, 0.6, 0.7, 0], 
 		], dtype=np.float32)
 
 		self.train_data = np.array(self.data)
 
-		self.data = np.array([val for val in self.data for _ in (range(1000))])
+		self.data = np.array([val for val in self.data for _ in (range(200))])
 
 		if not train:
 			self.data = self.train_data

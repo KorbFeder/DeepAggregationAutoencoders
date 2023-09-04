@@ -27,12 +27,12 @@ class ForwardForwardCoutingLayer(nn.Module):
 		self.out_features = out_features
 		self.in_features = in_features
 
-		self.edge_type_count = torch.zeros(out_features, in_features, len(edge_types)).to(self.device)
+		self.edge_type_count = torch.ones(out_features, in_features, len(edge_types)).to(self.device)
 		self.operators = operators
 
 	def forward(self: "ForwardForwardCoutingLayer", x: torch.Tensor) -> torch.Tensor:
 		num_samples = x.shape[0]
-		edge_type_prob = torch.softmax(self.edge_type_count, dim=-1)
+		#edge_type_prob = torch.softmax(self.edge_type_count, dim=-1)
 		node_values = torch.zeros(num_samples, self.out_features).to(self.device)
 
 		# loop over every sample in the  batch
@@ -42,10 +42,13 @@ class ForwardForwardCoutingLayer(nn.Module):
 				sample = x[sample_index]
 
 				edge_type_indices = torch.multinomial(
-					edge_type_prob[node_index], 
+					self.edge_type_count[node_index], 
 					num_samples=1, 
 					replacement=True
 				).squeeze(-1).to(torch.int)
+
+				if torch.count_nonzero(edge_type_indices) == 0:
+					edge_type_indices[torch.randint(len(edge_type_indices), size=(1,))] = 1
 
 				edge_values = torch.zeros(self.in_features).to(self.device)
 
@@ -62,7 +65,8 @@ class ForwardForwardCoutingLayer(nn.Module):
 							edge_values[edge_index] += NO_EDGE_OFFSET_T_CONORM
 
 				# aggregate the edges with the operator of the corresponding node
-				node_values[sample_index][node_index] = self.operators[node_index].value(edge_values)
+				node_value = self.operators[node_index].value(edge_values)
+				node_values[sample_index][node_index] = node_value
 
 		return node_values
 

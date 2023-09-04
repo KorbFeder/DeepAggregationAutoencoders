@@ -25,22 +25,3 @@ def plot_loss(losses: List[List[float]], save_path: str, name: str = 'default', 
 	
 	plt.savefig(os.path.join(save_path, f'{name}.png'))
 	plt.clf()
-
-	for i, loss in enumerate(losses):
-		label = None
-		if legend != None:
-			label = legend[i]
-
-		plt.plot(loss, label=label)
-
-	ax = plt.gca()
-	ax.set_ylim([0, np.min([np.max(losses), 1])])
-	plt.title(f'{name}')
-	plt.xlabel(y_label)
-	plt.ylabel('Loss')
-
-	if legend:
-		plt.legend()
-	
-	plt.savefig(os.path.join(save_path, f'{name}-cropped.png'))
-	plt.clf()

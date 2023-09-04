@@ -1,5 +1,6 @@
 from typing import Dict
 import torch.nn as nn
+import numpy as np
 import torch
 from tqdm import tqdm
 from trainer.base_trainer import BaseTrainer
@@ -27,5 +28,8 @@ class EdgeSelectionTrainer(BaseTrainer):
 			batch_features = batch_features.to(self.device)
 			prediction = self.model.train(batch_features)
 			train_loss = self.error(prediction, batch_features)
+
+			if np.isnan(train_loss.item()):
+				print('a')
 
 			self.metrics.add(epoch, len(batch_features), [train_loss.item()])

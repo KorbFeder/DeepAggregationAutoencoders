@@ -11,7 +11,7 @@ from experiments import Experiments
 def parse_args():
 	parser = argparse.ArgumentParser(description="Training")
 
-	parser.add_argument('--config', '-c', default='single', type=str, 
+	parser.add_argument('--config', '-c', default='bupa', type=str, 
 		help='Configuration file. Use name without extension and without file path')
 	
 	return parser.parse_args()
@@ -43,12 +43,16 @@ if __name__ == "__main__":
 	#experiments.diff_edge_node_ae()
 	#experiments.owa_autoencoder()
 	#experiments.diff_sample_ae()
-	#experiments.edge_counting()
-	experiments.forward_forward_counting()
+	#experiments.edge_node_counting()
+	experiments.edge_counting()
+	#experiments.forward_forward_counting()
+	#experiments.ff_edge_counting3()
+	#experiments.forward_forward_node_edge_counting()
 	#args = [
 	#	[[TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], False],
 ##		[[TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], True],
 ##		[[TrainMode.train_nodes, TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], False],
 ##		[[TrainMode.train_nodes, TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], True]
 	#]
-	#experiments.compare_experiments([experiments.default_autoencoder ,experiments.edge_counting, experiments.forward_forward_counting])
+	#experiments.repeat_experiment(experiments.edge_counting, 4)
+	#experiments.compare_experiments([experiments.default_autoencoder, experiments.edge_counting, experiments.ff_edge_counting])
