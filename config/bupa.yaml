@@ -6,19 +6,19 @@ data:
   dataset: 'bupa'
 
 trainer: 
-  epochs: 5
+  epochs: 25
 
 model:
   # The input features as int, will also be the output features example: in_out_features: 784 
   in_out_features: 7
   # The hidden sizes of the layers between input and ouput for example: hidden_sizes: [512, 256, 512]
-  hidden_sizes: [6, 4, 6]
+  hidden_sizes: [6, 5, 6]
   # Options are: 'cuda', 'cpu'
   device: 'cuda'
   #either an integer or null
-  seed: 5
+  seed: null
 
 path: 
-  experiment_name: 'autoencoder'
+  experiment_name: 'bupa'
   # CRITICAL = 50, ERROR = 40, WARNING = 30, INFO = 20, DEBUG = 10, NOTSET = 0, for example logger_level: 20
   logger_level: 20

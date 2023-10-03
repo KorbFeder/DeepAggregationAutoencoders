@@ -1,0 +1,24 @@
+data: 
+  # Batch size either int or null, for example: batch_size: 32 or batch_size: null
+  train_batch_size: 1
+  test_batch_size: 1
+  # The dataset to use options are: mnist, wine, or simple for example: dataset: 'mnist'
+  dataset: 'small_wine'
+
+trainer: 
+  epochs: 1
+
+model:
+  # The input features as int, will also be the output features example: in_out_features: 784 
+  in_out_features: 5
+  # The hidden sizes of the layers between input and ouput for example: hidden_sizes: [512, 256, 512]
+  hidden_sizes: [4, 3, 4]
+  # Options are: 'cuda', 'cpu'
+  device: 'cuda'
+  # random seed, either an integer or null
+  seed: 1
+
+path: 
+  experiment_name: 'small_wine'
+  # CRITICAL = 50, ERROR = 40, WARNING = 30, INFO = 20, DEBUG = 10, NOTSET = 0, for example logger_level: 20
+  logger_level: 20

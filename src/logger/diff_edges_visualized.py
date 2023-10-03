@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-from model.diff_edge_autoencoder import DiffEdgeAutoencoder
-from model.diff_edge_autoencoder import EdgeType
+from archived_models.diff_edge_autoencoder import DiffEdgeAutoencoder
+from archived_models.diff_edge_autoencoder import EdgeType
 
 from typing import List, Dict, Callable
 

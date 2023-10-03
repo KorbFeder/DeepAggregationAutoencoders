@@ -29,7 +29,7 @@ def plot_net(edge_ae: EdgeCountingAutoencoder, save_path: str):
 
 			for a in range(layer_sizes[layer_idx]):
 				if layer_idx == 0:
-					c.node('l'+str(layer_idx)+str(a), f'<x<SUB>{(a - 3) % 7}</SUB><SUP>(0)</SUP>>', fontcolor=NODE_TEXT_COLOR, fontsize='12')
+					c.node('l'+str(layer_idx)+str(a), f'<x<SUB>{a}</SUB><SUP>(0)</SUP>>', fontcolor=NODE_TEXT_COLOR, fontsize='12')
 
 				elif layer_idx == len(layer_sizes)-1:
 					operator_name = T_CONORM_NAME

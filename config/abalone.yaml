@@ -12,11 +12,11 @@ model:
   # The input features as int, will also be the output features example: in_out_features: 784 
   in_out_features: 11
   # The hidden sizes of the layers between input and ouput for example: hidden_sizes: [512, 256, 512]
-  hidden_sizes: [8, 6, 4, 6, 8]
+  hidden_sizes: [8, 7, 8]
   # Options are: 'cuda', 'cpu'
   device: 'cuda'
   #either an integer or null
-  seed: 0 
+  seed: 1
 
 path: 
   experiment_name: 'autoencoder'

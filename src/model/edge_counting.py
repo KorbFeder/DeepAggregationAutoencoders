@@ -26,7 +26,8 @@ class EdgeCountingLayer(nn.Module):
 			torch.manual_seed(seed)
 	
 		self.device = device
-		self.edge_type_count = torch.zeros(out_features, in_features, len(edge_types)).to(self.device)
+		self.count_size = 0.1
+		self.edge_type_count = torch.ones(out_features, in_features, len(edge_types)).to(self.device)
 		self.out_features = out_features
 		self.in_features = in_features
 		self.edge_types = edge_types
@@ -63,6 +64,7 @@ class EdgeCountingAutoencoder(nn.Module):
 		operators: List[Union[T_Norm, T_Conorm]] = [T_Norm.min, T_Conorm.max],
 		edge_types: List[EdgeType] = [EdgeType.no_edge, EdgeType.normal_edge], #, EdgeType.very, EdgeType.somewhat, EdgeType.Not],
 		loss_func = nn.MSELoss(),
+		count_step_size: int = 0.1,
 		seed: Optional[int] = None
 	) -> None:
 		super().__init__()
@@ -74,6 +76,7 @@ class EdgeCountingAutoencoder(nn.Module):
 		self.layer_sizes = layer_sizes
 		self.operators = (operators * int((len(layer_sizes) / len(operators)) + 1))[:len(layer_sizes)]
 		self.edge_types = edge_types
+		self.count_step_size = count_step_size
 
 		for i in range(len(layer_sizes)-1):
 			self.layers += [EdgeCountingLayer(layer_sizes[i], layer_sizes[i + 1], self.operators[i], edge_types, device, seed)]
@@ -127,9 +130,9 @@ class EdgeCountingAutoencoder(nn.Module):
 
 					new_node_back_indices[i].append(inc_edge_index.item())
 					# increase edges and no edges 
-					layer.edge_type_count[u][inc_edge_index.item()][1] += 1
+					layer.edge_type_count[u][inc_edge_index.item()][1] += self.count_step_size
 					for index in dec_edge_indices:
-						layer.edge_type_count[u][index.item()][0] += 1
+						layer.edge_type_count[u][index.item()][0] += self.count_step_size
 
 			node_back_indices = new_node_back_indices	
 			layer_index -= 1

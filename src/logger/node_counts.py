@@ -1,5 +1,5 @@
 import torch
-from model.node_counting import NodeCountingAutoencoder
+from archived_models.node_counting import NodeCountingAutoencoder
 
 torch.set_printoptions(precision=6, sci_mode=False)
 

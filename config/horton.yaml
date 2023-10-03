@@ -6,7 +6,7 @@ data:
   dataset: 'horton'
 
 trainer: 
-  epochs: 20
+  epochs: 45
 
 model:
   # The input features as int, will also be the output features example: in_out_features: 784 
@@ -16,9 +16,9 @@ model:
   # Options are: 'cuda', 'cpu'
   device: 'cuda'
   #either an integer or null
-  seed: 0 
+  seed: 0
 
 path: 
-  experiment_name: 'autoencoder'
+  experiment_name: 'horton'
   # CRITICAL = 50, ERROR = 40, WARNING = 30, INFO = 20, DEBUG = 10, NOTSET = 0, for example logger_level: 20
   logger_level: 20

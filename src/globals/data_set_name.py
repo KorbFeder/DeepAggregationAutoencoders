@@ -15,3 +15,5 @@ class DatasetName(Enum):
 	flag = 'flag'
 	iris = 'iris'
 	sonar = 'sonar'
+	household = 'household'
+	small_wine = 'small_wine'

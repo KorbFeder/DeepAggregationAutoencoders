@@ -23,7 +23,8 @@ class Trainer(BaseTrainer):
 		data_loader: DataLoader, 
 		log_path: str,
 		#error = nn.L1Loss(),
-		error = smooth_l1_loss
+		#error = smooth_l1_loss
+		error = nn.MSELoss()
 	) -> None:
 		super().__init__(model, config, None, None, log_path)
 		self.error = error

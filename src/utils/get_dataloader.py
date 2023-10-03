@@ -4,6 +4,7 @@ from typing import Tuple
 
 from data_loader.mnist_data_loader import mnist_loaders
 from data_loader.wine_data_loader import wine_quality_loaders
+from data_loader.small_wine_quality_loader import small_wine_quality_loaders
 from data_loader.simple_data_loader import simple_data_loaders
 from data_loader.single_data_loader import single_data_loaders
 from data_loader.iris_data_loader import iris_loaders
@@ -12,6 +13,7 @@ from data_loader.csv_data_loader import csv_loaders
 from data_loader.auto_mpg_loaders import auto_mpg_loaders
 from data_loader.horton_loader import horton_loaders
 from data_loader.energy_loader import energy_loaders
+from data_loader.household_loaders import household_loaders
 from globals.data_set_name import DatasetName
 
 def get_dataloader(dataset_name: DatasetName, train_batch_size = 32, test_batch_size = 1, transform = None) -> Tuple[DataLoader, DataLoader]:
@@ -40,6 +42,9 @@ def get_dataloader(dataset_name: DatasetName, train_batch_size = 32, test_batch_
 		return horton_loaders(train_batch_size=train_batch_size, test_batch_size=test_batch_size, transform=transform)
 	elif dataset_name == DatasetName.energy.value:
 		return energy_loaders(train_batch_size=train_batch_size, test_batch_size=test_batch_size, transform=transform)
-	
+	elif dataset_name == DatasetName.household.value:
+		return household_loaders(train_batch_size=train_batch_size, test_batch_size=test_batch_size, transform=transform)
+	elif dataset_name == DatasetName.small_wine.value:	
+		return small_wine_quality_loaders(train_batch_size=train_batch_size, test_batch_size=test_batch_size, transform=transform)
 	else:
 		assert 'wrong name for dataset'

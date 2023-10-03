@@ -6,19 +6,19 @@ data:
   dataset: 'auto_mpg'
 
 trainer: 
-  epochs: 5
+  epochs: 20
 
 model:
   # The input features as int, will also be the output features example: in_out_features: 784 
   in_out_features: 8
   # The hidden sizes of the layers between input and ouput for example: hidden_sizes: [512, 256, 512]
-  hidden_sizes: [7, 6, 5, 4, 5, 6, 7]
+  hidden_sizes: [7, 6, 7]
   # Options are: 'cuda', 'cpu'
   device: 'cuda'
   #either an integer or null
-  seed: 0 
+  seed: 11
 
 path: 
-  experiment_name: 'autoencoder'
+  experiment_name: 'auto_mpg'
   # CRITICAL = 50, ERROR = 40, WARNING = 30, INFO = 20, DEBUG = 10, NOTSET = 0, for example logger_level: 20
   logger_level: 20

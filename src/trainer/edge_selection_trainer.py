@@ -5,7 +5,7 @@ import torch
 from tqdm import tqdm
 from trainer.base_trainer import BaseTrainer
 from torch.utils.data import DataLoader
-from model.edge_selection_autoencoder import EdgeSelctionAutoencoder
+from archived_models.edge_selection_autoencoder import EdgeSelctionAutoencoder
 
 class EdgeSelectionTrainer(BaseTrainer):
 	def __init__(
@@ -28,8 +28,5 @@ class EdgeSelectionTrainer(BaseTrainer):
 			batch_features = batch_features.to(self.device)
 			prediction = self.model.train(batch_features)
 			train_loss = self.error(prediction, batch_features)
-
-			if np.isnan(train_loss.item()):
-				print('a')
 
 			self.metrics.add(epoch, len(batch_features), [train_loss.item()])

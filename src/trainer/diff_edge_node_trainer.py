@@ -6,8 +6,8 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 
 from trainer.base_trainer import BaseTrainer
-from model.diff_edge_node_ae import DiffEdgeNodeAutoencoder
-from model.diff_edge_node_ae import TrainMode
+from archived_models.diff_edge_node_ae import DiffEdgeNodeAutoencoder
+from archived_models.diff_edge_node_ae import TrainMode
 
 from typing import Dict
 

@@ -43,7 +43,7 @@ class BaseTester:
 	def _test(self: "BaseTester", x: torch.Tensor) -> torch.Tensor:
 		raise NotImplementedError
 
-	def test(self: "BaseTester") -> Metrics:
+	def test(self: "BaseTester", save_csv: bool = True, save_test_outputs: bool = True) -> Metrics:
 		print('started testing on test dataset ...')
 		results = []
 		originals = []
@@ -63,7 +63,8 @@ class BaseTester:
 		
 		if self.plotting:
 			self.plotting(originals, results, save_path=self.image_dir, name=f"test-{self.experiment_name}")
-		output_to_csv(originals, results, self.log_dir, f"reconstruction-test-{self.experiment_name}")
+		if save_test_outputs:
+			output_to_csv(originals, results, self.log_dir, f"reconstruction-test-{self.experiment_name}")
 
 		if self.tensorboard_graph:
 			writer = SummaryWriter(self.image_dir)
@@ -71,7 +72,8 @@ class BaseTester:
 			writer.add_graph(self.model, a[0])
 			writer.close()
 		
-		self.metrics.save(f"test-{self.csv_name}")
+		if save_csv:
+			self.metrics.save(f"test-{self.csv_name}")
 		return self.metrics
 
 			

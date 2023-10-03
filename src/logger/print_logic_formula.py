@@ -3,6 +3,7 @@ from fuzzy_logic.edge_types import EdgeType
 from fuzzy_logic.fuzzy_operators import T_Conorm, T_Norm
 import torch
 from typing import List
+import os
 import math
 
 T_NORM_NAME = "min"
@@ -18,11 +19,11 @@ def hidden_layer_index(node_counting_ae: EdgeCountingAutoencoder):
 	return index
 
 
-def print_hidden_logic_formula(node_counting_ae: EdgeCountingAutoencoder):
-	print_logic_formula(node_counting_ae, hidden_layer_index(node_counting_ae), name='Hidden Logic Formula:\n')
+def print_hidden_logic_formula(node_counting_ae: EdgeCountingAutoencoder, path = None):
+	print_logic_formula(node_counting_ae, hidden_layer_index(node_counting_ae), path=path, name='Hidden_Logic_Formula')
 
-def print_out_logic_formula(node_counting_ae: EdgeCountingAutoencoder):
-	print_logic_formula(node_counting_ae, len(node_counting_ae.layers)-1, name='Output Logic Formula:\n', end_index=hidden_layer_index(node_counting_ae))
+def print_out_logic_formula(node_counting_ae: EdgeCountingAutoencoder, path = None):
+	print_logic_formula(node_counting_ae, len(node_counting_ae.layers)-1, path=path, name='Output_Logic_Formula', end_index=hidden_layer_index(node_counting_ae))
 
 def traverse_net(node_counting_ae: EdgeCountingAutoencoder, layer_idx, node_index = 0, end_index = -1):
 	if layer_idx == end_index: 
@@ -48,10 +49,10 @@ def traverse_net(node_counting_ae: EdgeCountingAutoencoder, layer_idx, node_inde
 	return equation
 
 
-def print_logic_formula(node_counting_ae: EdgeCountingAutoencoder, start_layer: int, name: str = "Logic Functions: \n", end_index=-1):
+def print_logic_formula(node_counting_ae: EdgeCountingAutoencoder, start_layer: int, path = None, name: str = "Logic_Functions", end_index=-1):
 	layer_idx = start_layer 
 	edge_counts = node_counting_ae.layers[layer_idx].edge_type_count
-	equation = name
+	equation = name + '\n'
 	for i, _ in enumerate(edge_counts):
 		if start_layer == len(node_counting_ae.layers) - 1:
 			equation += f"y_{i}: "
@@ -60,6 +61,9 @@ def print_logic_formula(node_counting_ae: EdgeCountingAutoencoder, start_layer: 
 		equation += traverse_net(node_counting_ae, layer_idx, i, end_index)
 		equation += "\n"
 
+	if path:
+		f = open(os.path.join(path, name + '.txt'), 'w')
+		print(equation, file=f)
 	print(equation)
 
 

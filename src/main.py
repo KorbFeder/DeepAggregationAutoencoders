@@ -2,16 +2,14 @@ import torch
 import os
 import yaml
 import argparse
-import logging
-from globals.folder_names import LOG_FOLDER
-from model.diff_edge_node_ae import TrainMode, T_Conorm, T_Norm, EdgeType
 
 from experiments import Experiments
+from model.daa import NodeInitailzation
 
 def parse_args():
 	parser = argparse.ArgumentParser(description="Training")
 
-	parser.add_argument('--config', '-c', default='bupa', type=str, 
+	parser.add_argument('--config', '-c', default='small_wine', type=str, 
 		help='Configuration file. Use name without extension and without file path')
 	
 	return parser.parse_args()
@@ -33,26 +31,24 @@ if __name__ == "__main__":
 		device = torch.device('cpu')
 
 	experiments = Experiments(config)
-	#experiments.default_autoencoder()
-	#experiments.deep_aggr_autoenc()
-	#experiments.ddlg_autoencoder()
-	#experiments.edge_autoencoder()
-	#experiments.edge_powerset_autoencoder()
-	#experiments.edge_selection_autoencoder()
-	#experiments.diff_edge_autoencoder()
-	#experiments.diff_edge_node_ae()
-	#experiments.owa_autoencoder()
-	#experiments.diff_sample_ae()
-	#experiments.edge_node_counting()
-	experiments.edge_counting()
-	#experiments.forward_forward_counting()
-	#experiments.ff_edge_counting3()
-	#experiments.forward_forward_node_edge_counting()
-	#args = [
-	#	[[TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], False],
-##		[[TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], True],
-##		[[TrainMode.train_nodes, TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], False],
-##		[[TrainMode.train_nodes, TrainMode.train_edges], [T_Norm.min, T_Conorm.max], [EdgeType.no_edge, EdgeType.normal_edge], True]
-	#]
-	#experiments.repeat_experiment(experiments.edge_counting, 4)
+
 	#experiments.compare_experiments([experiments.default_autoencoder, experiments.edge_counting, experiments.ff_edge_counting])
+	#args = [[0.05, False], [0.2, False], [1, False]]
+	#experiments.repat_multiple_experiments(
+	#	[experiments.edge_counting for i in args], 
+	#	5, args, 
+	#	legend=[f'glass_{value[0]}' for value in args], 
+	#	plot_std_bands=False
+	#)
+	#experiments.daa()
+	experiments.edge_counting()
+
+	#args = [[], [0.1, False]]
+	#experiments.repat_multiple_experiments(
+	#	[ experiments.default_autoencoder, experiments.edge_counting, ], 
+	#	#[experiments.edge_counting, experiments.default_autoencoder], 
+	#	20, args, 
+	#	legend=['ANN-AE', 'DAA'], 
+	#	plot_std_bands=True
+	#)
+

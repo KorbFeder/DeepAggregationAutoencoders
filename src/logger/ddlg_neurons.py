@@ -1,7 +1,7 @@
 import torch 
 import torch.nn as nn
 
-from model.ddlg_autoencoder import DdlgAutoencoder
+from archived_models.ddlg_autoencoder import DdlgAutoencoder
 
 from typing import List, Dict
 
