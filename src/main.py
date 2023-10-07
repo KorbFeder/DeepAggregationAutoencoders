@@ -9,7 +9,7 @@ from model.daa import NodeInitailzation
 def parse_args():
 	parser = argparse.ArgumentParser(description="Training")
 
-	parser.add_argument('--config', '-c', default='small_wine', type=str, 
+	parser.add_argument('--config', '-c', default='horton', type=str, 
 		help='Configuration file. Use name without extension and without file path')
 	
 	return parser.parse_args()

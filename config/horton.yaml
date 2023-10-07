@@ -6,7 +6,7 @@ data:
   dataset: 'horton'
 
 trainer: 
-  epochs: 45
+  epochs: 15
 
 model:
   # The input features as int, will also be the output features example: in_out_features: 784 
@@ -16,7 +16,7 @@ model:
   # Options are: 'cuda', 'cpu'
   device: 'cuda'
   #either an integer or null
-  seed: 0
+  seed: null
 
 path: 
   experiment_name: 'horton'

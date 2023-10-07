@@ -11,6 +11,7 @@ from typing import Callable, List, Optional, Dict
 from utils.metrics import Metrics
 from globals.folder_names import LOG_FOLDER, IMAGE_FOLDER
 from logger.output_to_csv import output_to_csv
+from logger.original_to_csv import original_to_csv
 
 class BaseTester:
 	def __init__(
@@ -65,6 +66,7 @@ class BaseTester:
 			self.plotting(originals, results, save_path=self.image_dir, name=f"test-{self.experiment_name}")
 		if save_test_outputs:
 			output_to_csv(originals, results, self.log_dir, f"reconstruction-test-{self.experiment_name}")
+			original_to_csv(originals, results, self.log_dir, f"reconstruction-test-{self.experiment_name}-defuzzified")
 
 		if self.tensorboard_graph:
 			writer = SummaryWriter(self.image_dir)

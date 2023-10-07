@@ -6,7 +6,7 @@ data:
   dataset: 'bupa'
 
 trainer: 
-  epochs: 25
+  epochs: 10
 
 model:
   # The input features as int, will also be the output features example: in_out_features: 784 
